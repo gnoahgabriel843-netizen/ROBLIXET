@@ -73,10 +73,6 @@ body {
   z-index: 4;
 }
 
-#enemy1 { left: 180px; top: 150px; }
-#enemy2 { left: 650px; top: 180px; }
-#enemy3 { left: 300px; top: 390px; }
-
 #hud {
   position: fixed;
   top: 15px;
@@ -100,6 +96,7 @@ body {
   width: 100%;
   height: 100%;
   background: #2ecc71;
+  transition: width 0.2s ease;
 }
 
 #money {
@@ -167,17 +164,12 @@ body {
 <body>
 
 <div id="game">
-
   <div id="island">
-
     <div id="player"></div>
-
     <div class="enemy" id="enemy1"></div>
     <div class="enemy" id="enemy2"></div>
     <div class="enemy" id="enemy3"></div>
-
   </div>
-
 </div>
 
 <div id="hud">
@@ -202,7 +194,6 @@ body {
 <button id="attack">ATTAQUE</button>
 
 <script>
-
 const player = document.getElementById("player");
 const healthBar = document.getElementById("health");
 const moneyText = document.getElementById("money");
@@ -211,25 +202,39 @@ const message = document.getElementById("message");
 
 let x = 430;
 let y = 250;
-
 let health = 100;
 let money = 0;
 let defeated = 0;
+let gameOver = false;
+let lastAttackTime = 0;
 
 const speed = 8;
+const attackRange = 90;
+const attackCooldown = 300;
 
 const enemies = [
-  { id: "enemy1", x: 180, y: 150, alive: true },
-  { id: "enemy2", x: 650, y: 180, alive: true },
-  { id: "enemy3", x: 300, y: 390, alive: true }
+  { id: "enemy1", x: 180, y: 150, alive: true, vx: 1, vy: 1, speed: 1.1 },
+  { id: "enemy2", x: 650, y: 180, alive: true, vx: -1, vy: 1, speed: 1.4 },
+  { id: "enemy3", x: 300, y: 390, alive: true, vx: 1, vy: -1, speed: 1.2 }
 ];
+
+function updateHealthBar() {
+  healthBar.style.width = health + "%";
+  if (health > 60) {
+    healthBar.style.background = "#2ecc71";
+  } else if (health > 25) {
+    healthBar.style.background = "#f1c40f";
+  } else {
+    healthBar.style.background = "#e74c3c";
+  }
+}
 
 function updatePlayer() {
   player.style.left = x + "px";
   player.style.top = y + "px";
 }
 
-function syncEnemies() {
+function renderEnemies() {
   enemies.forEach(enemy => {
     const el = document.getElementById(enemy.id);
     if (!el) return;
@@ -246,6 +251,7 @@ function syncEnemies() {
 }
 
 function move(direction) {
+  if (gameOver) return;
 
   if (direction === "up") y -= speed;
   if (direction === "down") y += speed;
@@ -258,87 +264,153 @@ function move(direction) {
   updatePlayer();
 }
 
+function updateQuestText() {
+  if (defeated >= 3) {
+    questText.textContent = "✅ Quête terminée !";
+  } else {
+    questText.textContent = "🎯 Quête : bats 3 ennemis (" + defeated + "/3)";
+  }
+}
+
 function attack() {
+  if (gameOver) return;
+
+  const now = Date.now();
+  if (now - lastAttackTime < attackCooldown) return;
+  lastAttackTime = now;
+
+  let hit = false;
+
   enemies.forEach(enemy => {
     if (!enemy.alive) return;
 
-    const distance = Math.sqrt(
-      Math.pow(x - enemy.x, 2) +
-      Math.pow(y - enemy.y, 2)
-    );
+    const distance = Math.hypot(x - enemy.x, y - enemy.y);
 
-    if (distance < 90) {
+    if (distance < attackRange) {
       enemy.alive = false;
-      syncEnemies();
-
       defeated++;
       money += 100;
+      hit = true;
+      message.textContent = "⚔️ Ennemi vaincu !";
 
-      moneyText.textContent = "💰 Argent : " + money;
-
-      questText.textContent =
-        "🎯 Quête : bats 3 ennemis (" +
-        defeated +
-        "/3)";
+      updateQuestText();
 
       if (defeated >= 3) {
-        questText.textContent = "✅ Quête terminée !";
-        message.textContent = "🎉 Quête terminée ! +300";
         money += 300;
-        moneyText.textContent = "💰 Argent : " + money;
+        message.textContent = "🎉 Quête terminée ! +300";
+      }
+
+      moneyText.textContent = "💰 Argent : " + money;
+    }
+  });
+
+  if (!hit) {
+    message.textContent = "🥊 Attaque ratée !";
+  }
+
+  renderEnemies();
+}
+
+function handleEnemyCollision() {
+  enemies.forEach(enemy => {
+    if (!enemy.alive) return;
+
+    const enemyCenterX = enemy.x + 22;
+    const enemyCenterY = enemy.y + 22;
+    const playerCenterX = x + 22;
+    const playerCenterY = y + 22;
+
+    const distance = Math.hypot(playerCenterX - enemyCenterX, playerCenterY - enemyCenterY);
+
+    if (distance < 35) {
+      health = Math.max(0, health - 12);
+      updateHealthBar();
+      message.textContent = "💥 Tu as pris un coup !";
+
+      if (health <= 0) {
+        gameOver = true;
+        message.textContent = "💀 Tu es mort ! Appuie sur R pour rejouer";
       }
     }
   });
 }
 
-document.getElementById("up").ontouchstart =
-() => move("up");
+function updateEnemies() {
+  if (gameOver) return;
 
-document.getElementById("down").ontouchstart =
-() => move("down");
+  enemies.forEach(enemy => {
+    if (!enemy.alive) return;
 
-document.getElementById("left").ontouchstart =
-() => move("left");
+    enemy.x += enemy.vx * enemy.speed;
+    enemy.y += enemy.vy * enemy.speed;
 
-document.getElementById("right").ontouchstart =
-() => move("right");
+    if (enemy.x < 30 || enemy.x > 820) enemy.vx *= -1;
+    if (enemy.y < 30 || enemy.y > 490) enemy.vy *= -1;
 
-document.getElementById("up").onclick =
-() => move("up");
+    enemy.x = Math.max(20, Math.min(830, enemy.x));
+    enemy.y = Math.max(20, Math.min(475, enemy.y));
+  });
 
-document.getElementById("down").onclick =
-() => move("down");
+  renderEnemies();
+  handleEnemyCollision();
+}
 
-document.getElementById("left").onclick =
-() => move("left");
+function resetGame() {
+  x = 430;
+  y = 250;
+  health = 100;
+  money = 0;
+  defeated = 0;
+  gameOver = false;
+  lastAttackTime = 0;
 
-document.getElementById("right").onclick =
-() => move("right");
+  enemies.forEach((enemy, index) => {
+    enemy.alive = true;
+    if (index === 0) { enemy.x = 180; enemy.y = 150; enemy.vx = 1; enemy.vy = 1; }
+    if (index === 1) { enemy.x = 650; enemy.y = 180; enemy.vx = -1; enemy.vy = 1; }
+    if (index === 2) { enemy.x = 300; enemy.y = 390; enemy.vx = 1; enemy.vy = -1; }
+  });
 
-document.getElementById("attack").onclick = attack;
+  updatePlayer();
+  renderEnemies();
+  updateHealthBar();
+  moneyText.textContent = "💰 Argent : 0";
+  updateQuestText();
+  message.textContent = "Blox Burt";
+}
+
+document.getElementById("up").ontouchstart = () => move("up");
+document.getElementById("down").ontouchstart = () => move("down");
+document.getElementById("left").ontouchstart = () => move("left");
+document.getElementById("right").ontouchstart = () => move("right");
+
+document.getElementById("up").onclick = () => move("up");
+document.getElementById("down").onclick = () => move("down");
+document.getElementById("left").onclick = () => move("left");
+document.getElementById("right").onclick = () => move("right");
+
+document.getElementById("attack").onclick = () => {
+  if (gameOver) {
+    resetGame();
+    return;
+  }
+  attack();
+};
 
 document.addEventListener("keydown", e => {
-
-  if (e.key === "ArrowUp" || e.key === "w")
-    move("up");
-
-  if (e.key === "ArrowDown" || e.key === "s")
-    move("down");
-
-  if (e.key === "ArrowLeft" || e.key === "a")
-    move("left");
-
-  if (e.key === "ArrowRight" || e.key === "d")
-    move("right");
-
-  if (e.key === " ")
-    attack();
-
+  if (e.key === "ArrowUp" || e.key === "w") move("up");
+  if (e.key === "ArrowDown" || e.key === "s") move("down");
+  if (e.key === "ArrowLeft" || e.key === "a") move("left");
+  if (e.key === "ArrowRight" || e.key === "d") move("right");
+  if (e.key === " ") attack();
+  if (e.key === "r" || e.key === "R") resetGame();
 });
 
+setInterval(updateEnemies, 30);
+updateHealthBar();
 updatePlayer();
-syncEnemies();
-
+renderEnemies();
+updateQuestText();
 </script>
 
 </body>
