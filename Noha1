@@ -218,9 +218,31 @@ let defeated = 0;
 
 const speed = 8;
 
+const enemies = [
+  { id: "enemy1", x: 180, y: 150, alive: true },
+  { id: "enemy2", x: 650, y: 180, alive: true },
+  { id: "enemy3", x: 300, y: 390, alive: true }
+];
+
 function updatePlayer() {
   player.style.left = x + "px";
   player.style.top = y + "px";
+}
+
+function syncEnemies() {
+  enemies.forEach(enemy => {
+    const el = document.getElementById(enemy.id);
+    if (!el) return;
+
+    if (!enemy.alive) {
+      el.style.display = "none";
+      return;
+    }
+
+    el.style.left = enemy.x + "px";
+    el.style.top = enemy.y + "px";
+    el.style.display = "block";
+  });
 }
 
 function move(direction) {
@@ -237,24 +259,17 @@ function move(direction) {
 }
 
 function attack() {
-
-  const enemies = document.querySelectorAll(".enemy");
-
   enemies.forEach(enemy => {
-
-    if (enemy.style.display === "none") return;
-
-    const ex = parseInt(enemy.style.left);
-    const ey = parseInt(enemy.style.top);
+    if (!enemy.alive) return;
 
     const distance = Math.sqrt(
-      Math.pow(x - ex, 2) +
-      Math.pow(y - ey, 2)
+      Math.pow(x - enemy.x, 2) +
+      Math.pow(y - enemy.y, 2)
     );
 
     if (distance < 90) {
-
-      enemy.style.display = "none";
+      enemy.alive = false;
+      syncEnemies();
 
       defeated++;
       money += 100;
@@ -322,6 +337,7 @@ document.addEventListener("keydown", e => {
 });
 
 updatePlayer();
+syncEnemies();
 
 </script>
 
