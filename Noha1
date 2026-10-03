@@ -63,7 +63,7 @@ body {
   border-radius: 50% 50% 10px 10px;
 }
 
-.enemy {
+.enemy, #boss {
   position: absolute;
   width: 45px;
   height: 45px;
@@ -72,6 +72,19 @@ body {
   border-radius: 10px;
   z-index: 4;
 }
+
+#boss {
+  width: 70px;
+  height: 70px;
+  background: #8e44ad;
+  border-color: #111;
+  border-radius: 15px;
+  z-index: 6;
+}
+
+#enemy1 { left: 180px; top: 150px; }
+#enemy2 { left: 650px; top: 180px; }
+#enemy3 { left: 300px; top: 390px; }
 
 #hud {
   position: fixed;
@@ -105,6 +118,11 @@ body {
 }
 
 #quest {
+  margin-top: 8px;
+  font-size: 15px;
+}
+
+#level {
   margin-top: 8px;
   font-size: 15px;
 }
@@ -166,9 +184,12 @@ body {
 <div id="game">
   <div id="island">
     <div id="player"></div>
+
     <div class="enemy" id="enemy1"></div>
     <div class="enemy" id="enemy2"></div>
     <div class="enemy" id="enemy3"></div>
+
+    <div id="boss"></div>
   </div>
 </div>
 
@@ -179,6 +200,7 @@ body {
   </div>
 
   <div id="money">💰 Argent : 0</div>
+  <div id="level">Niveau : 1</div>
   <div id="quest">🎯 Quête : bats 3 ennemis</div>
 </div>
 
@@ -198,13 +220,16 @@ const player = document.getElementById("player");
 const healthBar = document.getElementById("health");
 const moneyText = document.getElementById("money");
 const questText = document.getElementById("quest");
+const levelText = document.getElementById("level");
 const message = document.getElementById("message");
+const bossEl = document.getElementById("boss");
 
 let x = 430;
 let y = 250;
 let health = 100;
 let money = 0;
 let defeated = 0;
+let level = 1;
 let gameOver = false;
 let lastAttackTime = 0;
 
@@ -217,6 +242,16 @@ const enemies = [
   { id: "enemy2", x: 650, y: 180, alive: true, vx: -1, vy: 1, speed: 1.4 },
   { id: "enemy3", x: 300, y: 390, alive: true, vx: 1, vy: -1, speed: 1.2 }
 ];
+
+const boss = {
+  x: 720,
+  y: 220,
+  alive: false,
+  hp: 6,
+  vx: -1,
+  vy: 1,
+  speed: 1.8
+};
 
 function updateHealthBar() {
   healthBar.style.width = health + "%";
@@ -248,6 +283,31 @@ function renderEnemies() {
     el.style.top = enemy.y + "px";
     el.style.display = "block";
   });
+
+  if (boss.alive) {
+    bossEl.style.left = boss.x + "px";
+    bossEl.style.top = boss.y + "px";
+    bossEl.style.display = "block";
+  } else {
+    bossEl.style.display = "none";
+  }
+}
+
+function updateQuestText() {
+  levelText.textContent = "Niveau : " + level;
+
+  if (gameOver) {
+    questText.textContent = "💀 Partie terminée";
+    return;
+  }
+
+  if (level === 1) {
+    questText.textContent = "🎯 Quête : bats 3 ennemis (" + defeated + "/3)";
+  } else if (boss.alive) {
+    questText.textContent = "👑 Boss : " + boss.hp + " PV restant";
+  } else {
+    questText.textContent = "✅ Victoire ! Le jeu est terminé !";
+  }
 }
 
 function move(direction) {
@@ -264,14 +324,6 @@ function move(direction) {
   updatePlayer();
 }
 
-function updateQuestText() {
-  if (defeated >= 3) {
-    questText.textContent = "✅ Quête terminée !";
-  } else {
-    questText.textContent = "🎯 Quête : bats 3 ennemis (" + defeated + "/3)";
-  }
-}
-
 function attack() {
   if (gameOver) return;
 
@@ -280,6 +332,27 @@ function attack() {
   lastAttackTime = now;
 
   let hit = false;
+
+  if (level === 2 && boss.alive) {
+    const distanceBoss = Math.hypot(x - boss.x, y - boss.y);
+    if (distanceBoss < attackRange + 15) {
+      boss.hp -= 1;
+      hit = true;
+      message.textContent = "💥 Coup au boss !";
+
+      if (boss.hp <= 0) {
+        boss.alive = false;
+        money += 500;
+        message.textContent = "👑 Boss vaincu ! +500";
+        level = 3;
+      }
+
+      moneyText.textContent = "💰 Argent : " + money;
+      updateQuestText();
+      renderEnemies();
+      return;
+    }
+  }
 
   enemies.forEach(enemy => {
     if (!enemy.alive) return;
@@ -293,13 +366,17 @@ function attack() {
       hit = true;
       message.textContent = "⚔️ Ennemi vaincu !";
 
-      updateQuestText();
-
       if (defeated >= 3) {
-        money += 300;
-        message.textContent = "🎉 Quête terminée ! +300";
+        level = 2;
+        boss.alive = true;
+        boss.hp = 6;
+        boss.x = 700;
+        boss.y = 220;
+        money += 200;
+        message.textContent = "🚀 Niveau 2 ! Boss apparu !";
       }
 
+      updateQuestText();
       moneyText.textContent = "💰 Argent : " + money;
     }
   });
@@ -333,6 +410,26 @@ function handleEnemyCollision() {
       }
     }
   });
+
+  if (boss.alive) {
+    const bossCenterX = boss.x + 35;
+    const bossCenterY = boss.y + 35;
+    const playerCenterX = x + 22;
+    const playerCenterY = y + 22;
+
+    const distance = Math.hypot(playerCenterX - bossCenterX, playerCenterY - bossCenterY);
+
+    if (distance < 55) {
+      health = Math.max(0, health - 18);
+      updateHealthBar();
+      message.textContent = "💥 Le boss t’a touché !";
+
+      if (health <= 0) {
+        gameOver = true;
+        message.textContent = "💀 Tu es mort ! Appuie sur R pour rejouer";
+      }
+    }
+  }
 }
 
 function updateEnemies() {
@@ -351,6 +448,17 @@ function updateEnemies() {
     enemy.y = Math.max(20, Math.min(475, enemy.y));
   });
 
+  if (boss.alive) {
+    boss.x += boss.vx * boss.speed;
+    boss.y += boss.vy * boss.speed;
+
+    if (boss.x < 100 || boss.x > 780) boss.vx *= -1;
+    if (boss.y < 80 || boss.y > 420) boss.vy *= -1;
+
+    boss.x = Math.max(100, Math.min(770, boss.x));
+    boss.y = Math.max(80, Math.min(410, boss.y));
+  }
+
   renderEnemies();
   handleEnemyCollision();
 }
@@ -361,6 +469,7 @@ function resetGame() {
   health = 100;
   money = 0;
   defeated = 0;
+  level = 1;
   gameOver = false;
   lastAttackTime = 0;
 
@@ -370,6 +479,11 @@ function resetGame() {
     if (index === 1) { enemy.x = 650; enemy.y = 180; enemy.vx = -1; enemy.vy = 1; }
     if (index === 2) { enemy.x = 300; enemy.y = 390; enemy.vx = 1; enemy.vy = -1; }
   });
+
+  boss.alive = false;
+  boss.hp = 6;
+  boss.x = 720;
+  boss.y = 220;
 
   updatePlayer();
   renderEnemies();
