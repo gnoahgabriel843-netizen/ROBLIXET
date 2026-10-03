@@ -6,216 +6,67 @@
 <title>Blox Burt</title>
 
 <style>
-* {
-  box-sizing: border-box;
-  user-select: none;
-}
-
-body {
-  margin: 0;
-  overflow: hidden;
-  background: #87ceeb;
-  font-family: Arial, sans-serif;
-}
-
-#game {
-  width: 100vw;
-  height: 100vh;
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(#6ec6ff 0%, #b9ecff 55%, #4aa3df 55%);
-}
-
-#island {
-  position: absolute;
-  width: 900px;
-  height: 550px;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  background: #5fcf5f;
-  border: 25px solid #d8b06a;
-  border-radius: 45%;
-  box-shadow: 0 15px 0 rgba(0,0,0,.15);
-}
-
-#player {
-  position: absolute;
-  width: 45px;
-  height: 55px;
-  background: #3498db;
-  border: 4px solid #222;
-  border-radius: 10px;
-  left: 430px;
-  top: 250px;
-  z-index: 5;
-}
-
-#player:before {
-  content: "";
-  position: absolute;
-  width: 35px;
-  height: 20px;
-  background: #f5cfa0;
-  top: -22px;
-  left: 1px;
-  border: 4px solid #222;
-  border-radius: 50% 50% 10px 10px;
-}
-
-.enemy, #boss {
-  position: absolute;
-  width: 45px;
-  height: 45px;
-  background: #e74c3c;
-  border: 4px solid #222;
-  border-radius: 10px;
-  z-index: 4;
-}
-
-#boss {
-  width: 70px;
-  height: 70px;
-  background: #8e44ad;
-  border-color: #111;
-  border-radius: 15px;
-  z-index: 6;
-}
-
+* { box-sizing: border-box; user-select: none; }
+body { margin: 0; overflow: hidden; background: #87ceeb; font-family: Arial, sans-serif; }
+#game { width: 100vw; height: 100vh; position: relative; overflow: hidden; background: linear-gradient(#6ec6ff 0%, #b9ecff 55%, #4aa3df 55%); }
+#island { position: absolute; width: 900px; height: 550px; left: 50%; top: 50%; transform: translate(-50%, -50%); background: #5fcf5f; border: 25px solid #d8b06a; border-radius: 45%; box-shadow: 0 15px 0 rgba(0,0,0,.15); }
+#player { position: absolute; width: 45px; height: 55px; background: #3498db; border: 4px solid #222; border-radius: 10px; left: 430px; top: 250px; z-index: 5; }
+#player:before { content: ""; position: absolute; width: 35px; height: 20px; background: #f5cfa0; top: -22px; left: 1px; border: 4px solid #222; border-radius: 50% 50% 10px 10px; }
+.enemy, #boss { position: absolute; width: 45px; height: 45px; background: #e74c3c; border: 4px solid #222; border-radius: 10px; z-index: 4; }
+#boss { width: 70px; height: 70px; background: #8e44ad; border-color: #111; border-radius: 15px; z-index: 6; }
+.fruit { position: absolute; width: 30px; height: 30px; border-radius: 50%; border: 3px solid #222; z-index: 7; }
+.fruit.speed { background: #f39c12; }
+.fruit.strength { background: #d35400; }
+.fruit.regen { background: #27ae60; }
+.fruit.double { background: #9b59b6; }
 #enemy1 { left: 180px; top: 150px; }
 #enemy2 { left: 650px; top: 180px; }
 #enemy3 { left: 300px; top: 390px; }
-
-#hud {
-  position: fixed;
-  top: 15px;
-  left: 15px;
-  z-index: 20;
-  color: white;
-  text-shadow: 2px 2px #222;
-  font-weight: bold;
-}
-
-#healthBox {
-  width: 180px;
-  height: 22px;
-  background: #333;
-  border: 3px solid white;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-#health {
-  width: 100%;
-  height: 100%;
-  background: #2ecc71;
-  transition: width 0.2s ease;
-}
-
-#money {
-  margin-top: 8px;
-  font-size: 18px;
-}
-
-#quest {
-  margin-top: 8px;
-  font-size: 15px;
-}
-
-#level {
-  margin-top: 8px;
-  font-size: 15px;
-}
-
-#controls {
-  position: fixed;
-  bottom: 25px;
-  left: 25px;
-  z-index: 30;
-  display: grid;
-  grid-template-columns: 55px 55px 55px;
-  gap: 5px;
-}
-
-.btn {
-  width: 55px;
-  height: 55px;
-  border: 3px solid white;
-  border-radius: 15px;
-  background: rgba(0,0,0,.45);
-  color: white;
-  font-size: 25px;
-}
-
-#up { grid-column: 2; }
-#left { grid-column: 1; }
-#down { grid-column: 2; }
-#right { grid-column: 3; }
-
-#attack {
-  position: fixed;
-  right: 25px;
-  bottom: 40px;
-  width: 85px;
-  height: 85px;
-  border-radius: 50%;
-  background: #e74c3c;
-  border: 5px solid white;
-  color: white;
-  font-weight: bold;
-  z-index: 30;
-}
-
-#message {
-  position: fixed;
-  top: 15px;
-  right: 15px;
-  background: rgba(0,0,0,.6);
-  color: white;
-  padding: 10px;
-  border-radius: 10px;
-  z-index: 30;
-}
+#hud { position: fixed; top: 15px; left: 15px; z-index: 20; color: white; text-shadow: 2px 2px #222; font-weight: bold; }
+#healthBox { width: 180px; height: 22px; background: #333; border: 3px solid white; border-radius: 10px; overflow: hidden; }
+#health { width: 100%; height: 100%; background: #2ecc71; transition: width 0.2s ease; }
+#money { margin-top: 8px; font-size: 18px; }
+#quest { margin-top: 8px; font-size: 15px; }
+#level { margin-top: 8px; font-size: 15px; }
+#shop { margin-top: 8px; font-size: 14px; }
+.shop-btn { display:inline-block; margin-right:6px; padding:6px 8px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); border-radius:8px; cursor:pointer; }
+#controls { position: fixed; bottom: 25px; left: 25px; z-index: 30; display: grid; grid-template-columns: 55px 55px 55px; gap: 5px; }
+.btn { width: 55px; height: 55px; border: 3px solid white; border-radius: 15px; background: rgba(0,0,0,.45); color: white; font-size: 25px; }
+#up { grid-column: 2; } #left { grid-column: 1; } #down { grid-column: 2; } #right { grid-column: 3; }
+#attack { position: fixed; right: 25px; bottom: 40px; width: 85px; height: 85px; border-radius: 50%; background: #e74c3c; border: 5px solid white; color: white; font-weight: bold; z-index: 30; }
+#message { position: fixed; top: 15px; right: 15px; background: rgba(0,0,0,.6); color: white; padding: 10px; border-radius: 10px; z-index: 30; }
 </style>
 </head>
-
 <body>
 
-<div id="game">
-  <div id="island">
-    <div id="player"></div>
-
-    <div class="enemy" id="enemy1"></div>
-    <div class="enemy" id="enemy2"></div>
-    <div class="enemy" id="enemy3"></div>
-
-    <div id="boss"></div>
-  </div>
-</div>
+<div id="game"><div id="island">
+  <div id="player"></div>
+  <div class="enemy" id="enemy1"></div>
+  <div class="enemy" id="enemy2"></div>
+  <div class="enemy" id="enemy3"></div>
+  <div id="boss"></div>
+</div></div>
 
 <div id="hud">
   <div>❤️ Vie</div>
-  <div id="healthBox">
-    <div id="health"></div>
-  </div>
-
+  <div id="healthBox"><div id="health"></div></div>
   <div id="money">💰 Argent : 0</div>
   <div id="level">Niveau : 1</div>
   <div id="quest">🎯 Quête : bats 3 ennemis</div>
+  <div id="shop">Boutique: <span class="shop-btn" data-type="speed">Vitesse (300)</span> <span class="shop-btn" data-type="strength">Force (400)</span> <span class="shop-btn" data-type="regen">Régén (250)</span> <span class="shop-btn" data-type="double">Double (500)</span></div>
 </div>
 
 <div id="message">Blox Burt</div>
-
 <div id="controls">
   <button class="btn" id="up">▲</button>
   <button class="btn" id="left">◀</button>
   <button class="btn" id="down">▼</button>
   <button class="btn" id="right">▶</button>
 </div>
-
 <button id="attack">ATTAQUE</button>
 
 <script>
+// --- game state ---
 const player = document.getElementById("player");
 const healthBar = document.getElementById("health");
 const moneyText = document.getElementById("money");
@@ -224,18 +75,13 @@ const levelText = document.getElementById("level");
 const message = document.getElementById("message");
 const bossEl = document.getElementById("boss");
 
-let x = 430;
-let y = 250;
-let health = 100;
-let money = 0;
-let defeated = 0;
-let level = 1;
-let gameOver = false;
-let lastAttackTime = 0;
+let x = 430, y = 250;
+let health = 100, money = 0, defeated = 0, level = 1, xp = 0;
+const maxLevel = 2450; // demandé
+let gameOver = false, lastAttackTime = 0;
 
-const speed = 8;
-const attackRange = 90;
-const attackCooldown = 300;
+const speedBase = 8; let speed = speedBase;
+let attackRange = 90; const attackCooldown = 300;
 
 const enemies = [
   { id: "enemy1", x: 180, y: 150, alive: true, vx: 1, vy: 1, speed: 1.1 },
@@ -243,288 +89,166 @@ const enemies = [
   { id: "enemy3", x: 300, y: 390, alive: true, vx: 1, vy: -1, speed: 1.2 }
 ];
 
-const boss = {
-  x: 720,
-  y: 220,
-  alive: false,
-  hp: 6,
-  vx: -1,
-  vy: 1,
-  speed: 1.8
-};
+const boss = { x: 720, y: 220, alive: false, hp: 6, vx: -1, vy: 1, speed: 1.8 };
 
-function updateHealthBar() {
-  healthBar.style.width = health + "%";
-  if (health > 60) {
-    healthBar.style.background = "#2ecc71";
-  } else if (health > 25) {
-    healthBar.style.background = "#f1c40f";
-  } else {
-    healthBar.style.background = "#e74c3c";
+// fruits
+const fruits = []; const fruitTypes = ["speed","strength","regen","double"]; let fruitCounter = 0;
+const fruitSpawnIntervalMs = 15000; const fruitLifetimeMs = 25000;
+const buffs = { speed: { active: false, until: 0 }, strength: { active: false, until: 0 }, regen: { active: false, until: 0 }, double: { active: false, until: 0 } };
+
+// shop prices
+const shopPrices = { speed: 300, strength: 400, regen: 250, double: 500 };
+
+// quests system (sequential, change with level). reward doubles when quest was changed by level-up (doubleNextReward flag).
+const quests = [
+  { id: 0, minLevel: 1, type: 'killEnemies', target: 3, progress: 0, baseReward: 300, xpReward: 150, description: 'Bats 3 ennemis' },
+  { id: 1, minLevel: 2, type: 'killEnemies', target: 5, progress: 0, baseReward: 500, xpReward: 250, description: 'Bats 5 ennemis' },
+  { id: 2, minLevel: 5, type: 'collectFruits', target: 3, progress: 0, baseReward: 600, xpReward: 300, description: 'Ramasse 3 fruits' },
+  { id: 3, minLevel: 10, type: 'defeatBoss', target: 1, progress: 0, baseReward: 1000, xpReward: 800, description: 'Bats le boss' }
+];
+let currentQuestIndex = 0;
+let doubleNextQuestReward = false;
+
+function xpNeededFor(lvl) { return lvl * 100; }
+function gainXP(amount) {
+  if (level >= maxLevel) return;
+  xp += amount;
+  while (level < maxLevel && xp >= xpNeededFor(level)) {
+    xp -= xpNeededFor(level);
+    level++;
+    message.textContent = `⬆️ Niveau ${level} atteint !`;
+    // reward on level up
+    money += 50;
+    moneyText.textContent = '💰 Argent : ' + money;
+    // if level reaches the minLevel of next quest, set double flag for next quest reward
+    const nextQ = quests[currentQuestIndex+1];
+    if (nextQ && level >= nextQ.minLevel) {
+      currentQuestIndex++;
+      doubleNextQuestReward = true;
+      message.textContent = `🔔 Nouvelle quête disponible : ${quests[currentQuestIndex].description} (récompense x2 à la complétion)`;
+      updateQuestText();
+    }
   }
+  updateQuestText();
 }
 
-function updatePlayer() {
-  player.style.left = x + "px";
-  player.style.top = y + "px";
+function applyBuff(type, durationMs) {
+  const now = Date.now(); buffs[type].active = true; buffs[type].until = now + durationMs;
+  if (type === 'speed') { speed = speedBase + 4; message.textContent = '💨 Vitesse augmentée !'; }
+  if (type === 'strength') { attackRange += 40; message.textContent = '💪 Force augmentée !'; }
+  if (type === 'regen') { message.textContent = '✨ Régénération activée !'; }
+  if (type === 'double') { message.textContent = '💸 Double argent activé !'; }
+  setTimeout(() => { const now2 = Date.now(); if (buffs[type].until <= now2) { buffs[type].active = false; if (type === 'speed') speed = speedBase; if (type === 'strength') attackRange = 90; message.textContent = `⏳ ${type} terminé`; } }, durationMs + 50);
 }
+
+function buyFruit(type) {
+  const price = shopPrices[type];
+  if (money < price) { message.textContent = "❌ Pas assez d'argent"; return; }
+  money -= price; moneyText.textContent = '💰 Argent : ' + money;
+  // grant buff immediately
+  if (type === 'speed') applyBuff('speed', 30000);
+  if (type === 'strength') applyBuff('strength', 30000);
+  if (type === 'regen') applyBuff('regen', 20000);
+  if (type === 'double') applyBuff('double', 30000);
+  message.textContent = `🛒 Fruit ${type} acheté !`;
+}
+
+// shop click handlers
+document.querySelectorAll('.shop-btn').forEach(btn => btn.addEventListener('click', e => {
+  const t = e.currentTarget.getAttribute('data-type'); buyFruit(t);
+}));
+
+function spawnFruit() {
+  if (fruits.length >= 3) return;
+  const type = fruitTypes[Math.floor(Math.random() * fruitTypes.length)];
+  const fx = 60 + Math.floor(Math.random() * 700);
+  const fy = 60 + Math.floor(Math.random() * 390);
+  const id = 'fruit_' + (fruitCounter++);
+  const el = document.createElement('div'); el.className = 'fruit ' + type; el.id = id; el.style.left = fx + 'px'; el.style.top = fy + 'px'; el.title = type; document.getElementById('island').appendChild(el);
+  const expiresAt = Date.now() + fruitLifetimeMs; fruits.push({ id, type, x: fx, y: fy, el, expiresAt });
+  setTimeout(() => { const idx = fruits.findIndex(f => f.id === id); if (idx !== -1) { const f = fruits[idx]; if (f.el && f.el.parentNode) f.el.parentNode.removeChild(f.el); fruits.splice(idx, 1); } }, fruitLifetimeMs + 100);
+}
+
+function pickFruit(index) {
+  const f = fruits[index]; if (!f) return; if (f.type === 'speed') applyBuff('speed', 30000); if (f.type === 'strength') applyBuff('strength', 30000); if (f.type === 'regen') applyBuff('regen', 20000); if (f.type === 'double') applyBuff('double', 30000);
+  message.textContent = `🍎 Fruit (${f.type}) ramassé !`;
+  // increment quest if relevant
+  incrementQuestProgress('collectFruits', 1);
+  if (f.el && f.el.parentNode) f.el.parentNode.removeChild(f.el); fruits.splice(index, 1);
+}
+
+function updateHealthBar() { healthBar.style.width = health + '%'; if (health > 60) healthBar.style.background = '#2ecc71'; else if (health > 25) healthBar.style.background = '#f1c40f'; else healthBar.style.background = '#e74c3c'; }
+function updatePlayer() { player.style.left = x + 'px'; player.style.top = y + 'px'; }
 
 function renderEnemies() {
-  enemies.forEach(enemy => {
-    const el = document.getElementById(enemy.id);
-    if (!el) return;
-
-    if (!enemy.alive) {
-      el.style.display = "none";
-      return;
-    }
-
-    el.style.left = enemy.x + "px";
-    el.style.top = enemy.y + "px";
-    el.style.display = "block";
-  });
-
-  if (boss.alive) {
-    bossEl.style.left = boss.x + "px";
-    bossEl.style.top = boss.y + "px";
-    bossEl.style.display = "block";
-  } else {
-    bossEl.style.display = "none";
-  }
+  enemies.forEach(enemy => { const el = document.getElementById(enemy.id); if (!el) return; if (!enemy.alive) { el.style.display = 'none'; return; } el.style.left = enemy.x + 'px'; el.style.top = enemy.y + 'px'; el.style.display = 'block'; });
+  if (boss.alive) { bossEl.style.left = boss.x + 'px'; bossEl.style.top = boss.y + 'px'; bossEl.style.display = 'block'; } else { bossEl.style.display = 'none'; }
+  fruits.forEach(f => { if (!f.el) return; f.el.style.left = f.x + 'px'; f.el.style.top = f.y + 'px'; });
 }
 
 function updateQuestText() {
-  levelText.textContent = "Niveau : " + level;
-
-  if (gameOver) {
-    questText.textContent = "💀 Partie terminée";
-    return;
-  }
-
-  if (level === 1) {
-    questText.textContent = "🎯 Quête : bats 3 ennemis (" + defeated + "/3)";
-  } else if (boss.alive) {
-    questText.textContent = "👑 Boss : " + boss.hp + " PV restant";
-  } else {
-    questText.textContent = "✅ Victoire ! Le jeu est terminé !";
-  }
+  levelText.textContent = 'Niveau : ' + level + (level >= maxLevel ? ' (MAX)' : '');
+  const q = quests[currentQuestIndex]; if (!q) { questText.textContent = 'Aucune quête disponible'; return; }
+  if (q.type === 'killEnemies') questText.textContent = `🎯 ${q.description} (${q.progress}/${q.target})`;
+  else if (q.type === 'collectFruits') questText.textContent = `🎯 ${q.description} (${q.progress}/${q.target})`;
+  else if (q.type === 'defeatBoss') questText.textContent = `🎯 ${q.description} (${q.progress}/${q.target})`;
 }
 
-function move(direction) {
-  if (gameOver) return;
+function incrementQuestProgress(type, amount) {
+  const q = quests[currentQuestIndex]; if (!q || q.type !== type) return; q.progress += amount; if (q.progress >= q.target) completeQuest(); updateQuestText(); }
 
-  if (direction === "up") y -= speed;
-  if (direction === "down") y += speed;
-  if (direction === "left") x -= speed;
-  if (direction === "right") x += speed;
-
-  x = Math.max(20, Math.min(835, x));
-  y = Math.max(20, Math.min(475, y));
-
-  updatePlayer();
+function completeQuest() {
+  const q = quests[currentQuestIndex]; if (!q) return; let reward = q.baseReward; if (doubleNextQuestReward) { reward *= 2; doubleNextQuestReward = false; }
+  // also double reward if player level is >= a threshold? (handled by doubleNextQuestReward flag)
+  money += reward; moneyText.textContent = '💰 Argent : ' + money; gainXP(q.xpReward); message.textContent = `🎉 Quête complétée +${reward} argent +${q.xpReward} XP`;
+  // move to next available quest if any
+  if (currentQuestIndex < quests.length - 1) currentQuestIndex++;
+  quests[currentQuestIndex].progress = 0; updateQuestText();
 }
+
+function move(direction) { if (gameOver) return; if (direction === 'up') y -= speed; if (direction === 'down') y += speed; if (direction === 'left') x -= speed; if (direction === 'right') x += speed; x = Math.max(20, Math.min(835, x)); y = Math.max(20, Math.min(475, y)); updatePlayer(); }
 
 function attack() {
-  if (gameOver) return;
-
-  const now = Date.now();
-  if (now - lastAttackTime < attackCooldown) return;
-  lastAttackTime = now;
-
-  let hit = false;
-
-  if (level === 2 && boss.alive) {
+  if (gameOver) return; const now = Date.now(); if (now - lastAttackTime < attackCooldown) return; lastAttackTime = now; let hit = false;
+  if (level >= 2 && boss.alive) {
     const distanceBoss = Math.hypot(x - boss.x, y - boss.y);
     if (distanceBoss < attackRange + 15) {
-      boss.hp -= 1;
-      hit = true;
-      message.textContent = "💥 Coup au boss !";
-
-      if (boss.hp <= 0) {
-        boss.alive = false;
-        money += 500;
-        message.textContent = "👑 Boss vaincu ! +500";
-        level = 3;
-      }
-
-      moneyText.textContent = "💰 Argent : " + money;
-      updateQuestText();
-      renderEnemies();
-      return;
-    }
+      boss.hp -= 1; hit = true; message.textContent = '💥 Coup au boss !'; if (boss.hp <= 0) { boss.alive = false; const gained = (200 + level * 10); money += gained; gainXP(500); message.textContent = `👑 Boss vaincu ! +${gained} argent`; // quest progress
+          incrementQuestProgress('defeatBoss', 1);
+      } moneyText.textContent = '💰 Argent : ' + money; updateQuestText(); renderEnemies(); return; }
   }
-
-  enemies.forEach(enemy => {
-    if (!enemy.alive) return;
-
-    const distance = Math.hypot(x - enemy.x, y - enemy.y);
-
-    if (distance < attackRange) {
-      enemy.alive = false;
-      defeated++;
-      money += 100;
-      hit = true;
-      message.textContent = "⚔️ Ennemi vaincu !";
-
-      if (defeated >= 3) {
-        level = 2;
-        boss.alive = true;
-        boss.hp = 6;
-        boss.x = 700;
-        boss.y = 220;
-        money += 200;
-        message.textContent = "🚀 Niveau 2 ! Boss apparu !";
-      }
-
-      updateQuestText();
-      moneyText.textContent = "💰 Argent : " + money;
-    }
-  });
-
-  if (!hit) {
-    message.textContent = "🥊 Attaque ratée !";
-  }
-
-  renderEnemies();
-}
+  enemies.forEach(enemy => { if (!enemy.alive) return; const distance = Math.hypot(x - enemy.x, y - enemy.y); if (distance < attackRange) { enemy.alive = false; defeated++; const baseMoney = 100; const moneyGain = baseMoney * (buffs.double.active ? 2 : 1); money += moneyGain; gainXP(50); hit = true; message.textContent = '⚔️ Ennemi vaincu !'; incrementQuestProgress('killEnemies', 1); if (defeated >= 3 && level === 1) { level = 2; boss.alive = true; boss.hp = 6; boss.x = 700; boss.y = 220; money += 200; message.textContent = '🚀 Niveau 2 ! Boss apparu !'; } updateQuestText(); moneyText.textContent = '💰 Argent : ' + money; } }); if (!hit) { message.textContent = '🥊 Attaque ratée !'; } renderEnemies(); }
 
 function handleEnemyCollision() {
-  enemies.forEach(enemy => {
-    if (!enemy.alive) return;
-
-    const enemyCenterX = enemy.x + 22;
-    const enemyCenterY = enemy.y + 22;
-    const playerCenterX = x + 22;
-    const playerCenterY = y + 22;
-
-    const distance = Math.hypot(playerCenterX - enemyCenterX, playerCenterY - enemyCenterY);
-
-    if (distance < 35) {
-      health = Math.max(0, health - 12);
-      updateHealthBar();
-      message.textContent = "💥 Tu as pris un coup !";
-
-      if (health <= 0) {
-        gameOver = true;
-        message.textContent = "💀 Tu es mort ! Appuie sur R pour rejouer";
-      }
-    }
-  });
-
-  if (boss.alive) {
-    const bossCenterX = boss.x + 35;
-    const bossCenterY = boss.y + 35;
-    const playerCenterX = x + 22;
-    const playerCenterY = y + 22;
-
-    const distance = Math.hypot(playerCenterX - bossCenterX, playerCenterY - bossCenterY);
-
-    if (distance < 55) {
-      health = Math.max(0, health - 18);
-      updateHealthBar();
-      message.textContent = "💥 Le boss t’a touché !";
-
-      if (health <= 0) {
-        gameOver = true;
-        message.textContent = "💀 Tu es mort ! Appuie sur R pour rejouer";
-      }
-    }
+  // fruit pickup
+  for (let i = fruits.length - 1; i >= 0; i--) {
+    const f = fruits[i]; const fcX = f.x + 15; const fcY = f.y + 15; const pcX = x + 22; const pcY = y + 22; const dist = Math.hypot(pcX - fcX, pcY - fcY); if (dist < 30) { pickFruit(i); }
   }
+  enemies.forEach(enemy => { if (!enemy.alive) return; const enemyCenterX = enemy.x + 22; const enemyCenterY = enemy.y + 22; const playerCenterX = x + 22; const playerCenterY = y + 22; const distance = Math.hypot(playerCenterX - enemyCenterX, playerCenterY - enemyCenterY); if (distance < 35) { health = Math.max(0, health - 12); updateHealthBar(); message.textContent = '💥 Tu as pris un coup !'; if (health <= 0) { gameOver = true; message.textContent = '💀 Tu es mort ! Appuie sur R pour rejouer'; } } }); if (boss.alive) { const bossCenterX = boss.x + 35; const bossCenterY = boss.y + 35; const playerCenterX = x + 22; const playerCenterY = y + 22; const distance = Math.hypot(playerCenterX - bossCenterX, playerCenterY - bossCenterY); if (distance < 55) { health = Math.max(0, health - 18); updateHealthBar(); message.textContent = '💥 Le boss t’a touché !'; if (health <= 0) { gameOver = true; message.textContent = '💀 Tu es mort ! Appuie sur R pour rejouer'; } } }
 }
 
-function updateEnemies() {
-  if (gameOver) return;
+function updateEnemies() { if (gameOver) return; if (buffs.regen.active && health < 100) { health = Math.min(100, health + 0.2); updateHealthBar(); } const now = Date.now(); Object.keys(buffs).forEach(k => { if (buffs[k].active && buffs[k].until <= now) { buffs[k].active = false; if (k === 'speed') speed = speedBase; if (k === 'strength') attackRange = 90; } }); enemies.forEach(enemy => { if (!enemy.alive) return; enemy.x += enemy.vx * enemy.speed; enemy.y += enemy.vy * enemy.speed; if (enemy.x < 30 || enemy.x > 820) enemy.vx *= -1; if (enemy.y < 30 || enemy.y > 490) enemy.vy *= -1; enemy.x = Math.max(20, Math.min(830, enemy.x)); enemy.y = Math.max(20, Math.min(475, enemy.y)); }); if (boss.alive) { boss.x += boss.vx * boss.speed; boss.y += boss.vy * boss.speed; if (boss.x < 100 || boss.x > 780) boss.vx *= -1; if (boss.y < 80 || boss.y > 420) boss.vy *= -1; boss.x = Math.max(100, Math.min(770, boss.x)); boss.y = Math.max(80, Math.min(410, boss.y)); } renderEnemies(); handleEnemyCollision(); }
 
-  enemies.forEach(enemy => {
-    if (!enemy.alive) return;
+function resetGame() { x = 430; y = 250; health = 100; money = 0; defeated = 0; level = 1; xp = 0; gameOver = false; lastAttackTime = 0; enemies.forEach((enemy, index) => { enemy.alive = true; if (index === 0) { enemy.x = 180; enemy.y = 150; enemy.vx = 1; enemy.vy = 1; } if (index === 1) { enemy.x = 650; enemy.y = 180; enemy.vx = -1; enemy.vy = 1; } if (index === 2) { enemy.x = 300; enemy.y = 390; enemy.vx = 1; enemy.vy = -1; } }); fruits.forEach(f => { if (f.el && f.el.parentNode) f.el.parentNode.removeChild(f.el); }); fruits.length = 0; Object.keys(buffs).forEach(k => { buffs[k].active = false; buffs[k].until = 0; }); speed = speedBase; attackRange = 90; boss.alive = false; boss.hp = 6; boss.x = 720; boss.y = 220; // reset quests
+  currentQuestIndex = 0; quests.forEach(q => { q.progress = 0; }); doubleNextQuestReward = false;
+  updatePlayer(); renderEnemies(); updateHealthBar(); moneyText.textContent = '💰 Argent : 0'; updateQuestText(); message.textContent = 'Blox Burt'; }
 
-    enemy.x += enemy.vx * enemy.speed;
-    enemy.y += enemy.vy * enemy.speed;
+// spawn fruits periodically
+setInterval(() => { if (!gameOver) spawnFruit(); }, fruitSpawnIntervalMs);
 
-    if (enemy.x < 30 || enemy.x > 820) enemy.vx *= -1;
-    if (enemy.y < 30 || enemy.y > 490) enemy.vy *= -1;
+document.getElementById('up').ontouchstart = () => move('up');
+document.getElementById('down').ontouchstart = () => move('down');
+document.getElementById('left').ontouchstart = () => move('left');
+document.getElementById('right').ontouchstart = () => move('right');
+document.getElementById('up').onclick = () => move('up');
+document.getElementById('down').onclick = () => move('down');
+document.getElementById('left').onclick = () => move('left');
+document.getElementById('right').onclick = () => move('right');
+document.getElementById('attack').onclick = () => { if (gameOver) { resetGame(); return; } attack(); };
 
-    enemy.x = Math.max(20, Math.min(830, enemy.x));
-    enemy.y = Math.max(20, Math.min(475, enemy.y));
-  });
+document.addEventListener('keydown', e => { if (e.key === 'ArrowUp' || e.key === 'w') move('up'); if (e.key === 'ArrowDown' || e.key === 's') move('down'); if (e.key === 'ArrowLeft' || e.key === 'a') move('left'); if (e.key === 'ArrowRight' || e.key === 'd') move('right'); if (e.key === ' ') attack(); if (e.key === 'r' || e.key === 'R') resetGame(); });
 
-  if (boss.alive) {
-    boss.x += boss.vx * boss.speed;
-    boss.y += boss.vy * boss.speed;
-
-    if (boss.x < 100 || boss.x > 780) boss.vx *= -1;
-    if (boss.y < 80 || boss.y > 420) boss.vy *= -1;
-
-    boss.x = Math.max(100, Math.min(770, boss.x));
-    boss.y = Math.max(80, Math.min(410, boss.y));
-  }
-
-  renderEnemies();
-  handleEnemyCollision();
-}
-
-function resetGame() {
-  x = 430;
-  y = 250;
-  health = 100;
-  money = 0;
-  defeated = 0;
-  level = 1;
-  gameOver = false;
-  lastAttackTime = 0;
-
-  enemies.forEach((enemy, index) => {
-    enemy.alive = true;
-    if (index === 0) { enemy.x = 180; enemy.y = 150; enemy.vx = 1; enemy.vy = 1; }
-    if (index === 1) { enemy.x = 650; enemy.y = 180; enemy.vx = -1; enemy.vy = 1; }
-    if (index === 2) { enemy.x = 300; enemy.y = 390; enemy.vx = 1; enemy.vy = -1; }
-  });
-
-  boss.alive = false;
-  boss.hp = 6;
-  boss.x = 720;
-  boss.y = 220;
-
-  updatePlayer();
-  renderEnemies();
-  updateHealthBar();
-  moneyText.textContent = "💰 Argent : 0";
-  updateQuestText();
-  message.textContent = "Blox Burt";
-}
-
-document.getElementById("up").ontouchstart = () => move("up");
-document.getElementById("down").ontouchstart = () => move("down");
-document.getElementById("left").ontouchstart = () => move("left");
-document.getElementById("right").ontouchstart = () => move("right");
-
-document.getElementById("up").onclick = () => move("up");
-document.getElementById("down").onclick = () => move("down");
-document.getElementById("left").onclick = () => move("left");
-document.getElementById("right").onclick = () => move("right");
-
-document.getElementById("attack").onclick = () => {
-  if (gameOver) {
-    resetGame();
-    return;
-  }
-  attack();
-};
-
-document.addEventListener("keydown", e => {
-  if (e.key === "ArrowUp" || e.key === "w") move("up");
-  if (e.key === "ArrowDown" || e.key === "s") move("down");
-  if (e.key === "ArrowLeft" || e.key === "a") move("left");
-  if (e.key === "ArrowRight" || e.key === "d") move("right");
-  if (e.key === " ") attack();
-  if (e.key === "r" || e.key === "R") resetGame();
-});
-
-setInterval(updateEnemies, 30);
-updateHealthBar();
-updatePlayer();
-renderEnemies();
-updateQuestText();
+setInterval(updateEnemies, 30); updateHealthBar(); updatePlayer(); renderEnemies(); updateQuestText();
 </script>
 
 </body>
