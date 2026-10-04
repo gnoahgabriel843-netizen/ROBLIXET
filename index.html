@@ -3,589 +3,530 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
 <title>Blox Burt</title>
 
 <style>
-*{box-sizing:border-box}
-html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  font-family:Arial,sans-serif;
-  background:#fff;
-}
-button{font-family:inherit}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;font-family:Arial,sans-serif;background:#07111c}
+button{font-family:Arial,sans-serif}
 
-/* ACCUEIL */
 #menu{
-  position:fixed;
-  inset:0;
-  z-index:20;
-  background:linear-gradient(135deg,#fff 50%,#111 50%);
-  display:flex;
-  align-items:center;
-  justify-content:center;
+ position:fixed;inset:0;z-index:100;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ background:
+ radial-gradient(circle at 50% 35%,rgba(40,170,255,.35),transparent 35%),
+ linear-gradient(135deg,#06182b,#092d48 50%,#02070d);
+ color:white;
 }
-.menuBox{
-  width:min(90%,430px);
-  background:#fff;
-  border:4px solid #111;
-  border-radius:25px;
-  padding:35px 25px;
-  text-align:center;
-  box-shadow:0 15px 40px rgba(0,0,0,.3);
-}
-.logo{
-  font-size:48px;
-  font-weight:900;
-  letter-spacing:3px;
-  color:#111;
-}
-.subtitle{
-  margin:8px 0 30px;
-  color:#555;
-}
-.play{
-  width:100%;
-  padding:18px;
-  border:0;
-  border-radius:14px;
-  background:#111;
-  color:#fff;
-  font-size:22px;
-  font-weight:bold;
-  cursor:pointer;
-}
-.play:active{transform:scale(.97)}
-.gameCard{
-  margin-top:20px;
-  border:2px solid #ddd;
-  border-radius:15px;
-  padding:14px;
-  text-align:left;
-}
-.gameCard b{font-size:20px}
 
-/* JEU */
-#game{
-  position:fixed;
-  inset:0;
-  width:100%;
-  height:100%;
-  display:none;
-  background:#75c8ff;
+.logo{
+ font-size:clamp(42px,11vw,78px);
+ font-weight:1000;
+ letter-spacing:4px;
+ text-shadow:0 6px 0 #07365a,0 12px 25px #000;
 }
+.subtitle{margin:12px 0 40px;opacity:.85;font-size:16px}
+
+#play{
+ border:0;border-radius:14px;padding:17px 65px;
+ font-size:25px;font-weight:900;color:white;
+ background:linear-gradient(#22b7ff,#0872d1);
+ box-shadow:0 8px 25px #001b33;
+}
+#play:active{transform:scale(.95)}
+
+#game{display:none;position:fixed;inset:0;background:#7ed8ff}
+
+canvas{display:block;width:100%;height:100%}
 
 #hud{
-  position:fixed;
-  inset:0;
-  display:none;
-  pointer-events:none;
-  color:#fff;
-  text-shadow:2px 2px 3px #000;
+ position:absolute;top:12px;left:12px;right:12px;
+ display:flex;justify-content:space-between;
+ color:white;pointer-events:none;
+}
+.panel{
+ background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.2);
+ padding:9px 13px;border-radius:10px;font-weight:bold;
 }
 
-#stats{
-  position:absolute;
-  left:12px;
-  top:12px;
-  background:rgba(0,0,0,.6);
-  padding:10px;
-  border-radius:12px;
-  min-width:170px;
+#attacks{
+ position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
+ display:flex;gap:9px;
 }
-
-.bar{
-  width:160px;
-  height:10px;
-  background:#333;
-  border-radius:10px;
-  overflow:hidden;
-  margin:4px 0;
+.attack{
+ width:58px;height:58px;border-radius:13px;
+ border:2px solid white;background:rgba(0,0,0,.65);
+ color:white;font-size:21px;font-weight:900;
 }
-#hp{height:100%;background:#e53935;width:100%}
-#xp{height:100%;background:#ffd600;width:0%}
-
-#islandName{
-  position:absolute;
-  top:18px;
-  left:50%;
-  transform:translateX(-50%);
-  font-size:23px;
-  font-weight:bold;
-}
-
-#powers{
-  position:absolute;
-  bottom:15px;
-  left:50%;
-  transform:translateX(-50%);
-  display:flex;
-  gap:7px;
-  pointer-events:auto;
-}
-
-.power{
-  width:60px;
-  height:60px;
-  border:2px solid #fff;
-  border-radius:14px;
-  background:rgba(0,0,0,.75);
-  color:#fff;
-  font-weight:bold;
-  font-size:20px;
-  position:relative;
-}
-.power small{
-  display:block;
-  font-size:9px;
-}
-.cooldown{
-  display:none;
-  position:absolute;
-  inset:0;
-  align-items:center;
-  justify-content:center;
-  border-radius:12px;
-  background:rgba(0,0,0,.75);
-}
+.attack:active{transform:scale(.88);background:#168cff}
 
 #joystick{
-  position:absolute;
-  left:20px;
-  bottom:25px;
-  width:120px;
-  height:120px;
-  border-radius:50%;
-  border:2px solid rgba(255,255,255,.4);
-  background:rgba(255,255,255,.15);
-  pointer-events:auto;
+ position:absolute;left:22px;bottom:25px;
+ width:125px;height:125px;border-radius:50%;
+ background:rgba(255,255,255,.14);
+ border:2px solid rgba(255,255,255,.35);
 }
 #stick{
-  position:absolute;
-  width:52px;
-  height:52px;
-  left:32px;
-  top:32px;
-  border-radius:50%;
-  background:rgba(255,255,255,.45);
+ position:absolute;left:35px;top:35px;
+ width:55px;height:55px;border-radius:50%;
+ background:rgba(255,255,255,.55);
 }
 
-#lookArea{
-  position:absolute;
-  right:0;
-  top:0;
-  width:50%;
-  height:75%;
-  pointer-events:auto;
-}
-
-@media(max-width:600px){
-  .logo{font-size:38px}
-  .power{width:54px;height:54px}
-  #islandName{font-size:18px}
+#hint{
+ position:absolute;top:72px;left:50%;transform:translateX(-50%);
+ color:white;background:rgba(0,0,0,.45);
+ padding:7px 12px;border-radius:9px;font-size:13px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ACCUEIL -->
 <div id="menu">
-  <div class="menuBox">
-    <div class="logo">BLOX BURT</div>
-    <div class="subtitle">Aventure • Combat • Exploration</div>
-
-    <button class="play" id="playButton">▶ JOUER</button>
-
-    <div class="gameCard">
-      🏴‍☠️ <b>Blox Burt</b><br>
-      <span>Explore les îles, combats les ennemis et débloque de nouveaux pouvoirs.</span>
-    </div>
-  </div>
+  <div class="logo">BLOX BURT</div>
+  <div class="subtitle">EXPLORE • COMBAT • DEVIENS LE PLUS PUISSANT</div>
+  <button id="play">JOUER</button>
 </div>
 
-<canvas id="game"></canvas>
+<div id="game">
+  <canvas id="canvas"></canvas>
 
-<div id="hud">
-
-  <div id="stats">
-    <b>BLOX BURT</b><br>
-    Niveau : <span id="level">1</span><br>
-    Beli : <span id="beli">500</span>
-
-    <div>❤️ Vie</div>
-    <div class="bar"><div id="hp"></div></div>
-
-    <div>⭐ XP</div>
-    <div class="bar"><div id="xp"></div></div>
+  <div id="hud">
+    <div class="panel">❤️ <span id="hp">100</span>/100</div>
+    <div class="panel">💰 <span id="beli">0</span> Beli</div>
   </div>
 
-  <div id="islandName">Île du Départ</div>
+  <div id="hint">Glisse sur l'écran pour tourner la caméra 360°</div>
 
   <div id="joystick">
     <div id="stick"></div>
   </div>
 
-  <div id="lookArea"></div>
-
-  <div id="powers">
-    <button class="power" data-power="Z">Z<small>Dash</small><span class="cooldown"></span></button>
-    <button class="power" data-power="X">X<small>Slash</small><span class="cooldown"></span></button>
-    <button class="power" data-power="C">C<small>Blast</small><span class="cooldown"></span></button>
-    <button class="power" data-power="V">V<small>ULTIME</small><span class="cooldown"></span></button>
-    <button class="power" data-power="F">F<small>Wave</small><span class="cooldown"></span></button>
+  <div id="attacks">
+    <button class="attack" data-power="X">X</button>
+    <button class="attack" data-power="Z">Z</button>
+    <button class="attack" data-power="C">C</button>
+    <button class="attack" data-power="V">V</button>
   </div>
-
 </div>
 
 <script>
-const canvas=document.getElementById("game");
-const ctx=canvas.getContext("2d");
-
-function resize(){
-  canvas.width=window.innerWidth;
-  canvas.height=window.innerHeight;
-}
-resize();
-window.addEventListener("resize",resize);
-
-/* ======================
-   MENU
-====================== */
-
 const menu=document.getElementById("menu");
 const game=document.getElementById("game");
-const hud=document.getElementById("hud");
+const play=document.getElementById("play");
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
 
-document.getElementById("playButton").addEventListener("click",()=>{
-  menu.style.display="none";
-  game.style.display="block";
-  hud.style.display="block";
+let W=innerWidth,H=innerHeight;
+canvas.width=W*devicePixelRatio;
+canvas.height=H*devicePixelRatio;
+ctx.scale(devicePixelRatio,devicePixelRatio);
+
+addEventListener("resize",()=>{
+ W=innerWidth;H=innerHeight;
+ canvas.width=W*devicePixelRatio;
+ canvas.height=H*devicePixelRatio;
+ ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
 });
 
-/* ======================
-   JOUEUR
-====================== */
-
-const player={
-  x:0,
-  z:0,
-  rot:0,
-  speed:.13,
-  hp:100,
-  maxHp:100,
-  level:1,
-  xp:0,
-  beli:500
-};
-
-const camera={
-  angle:0,
-  distance:7
-};
-
-const keys={};
-
-window.addEventListener("keydown",e=>{
-  keys[e.key.toLowerCase()]=true;
-
-  const p=e.key.toUpperCase();
-  if(["Z","X","C","V","F"].includes(p)){
-    usePower(p);
-  }
-});
-
-window.addEventListener("keyup",e=>{
-  keys[e.key.toLowerCase()]=false;
-});
-
-/* ======================
-   CAMÉRA PC
-====================== */
-
-let dragging=false;
-let lastMouseX=0;
-
-canvas.addEventListener("mousedown",e=>{
-  dragging=true;
-  lastMouseX=e.clientX;
-});
-
-window.addEventListener("mouseup",()=>{
-  dragging=false;
-});
-
-window.addEventListener("mousemove",e=>{
-  if(!dragging)return;
-
-  camera.angle+=(e.clientX-lastMouseX)*.008;
-  lastMouseX=e.clientX;
-});
-
-/* ======================
-   CAMÉRA MOBILE
-====================== */
-
-const lookArea=document.getElementById("lookArea");
-let lastTouchX=0;
-
-lookArea.addEventListener("touchstart",e=>{
-  lastTouchX=e.touches[0].clientX;
-},{passive:true});
-
-lookArea.addEventListener("touchmove",e=>{
-  const x=e.touches[0].clientX;
-  camera.angle+=(x-lastTouchX)*.009;
-  lastTouchX=x;
-},{passive:true});
-
-/* ======================
-   JOYSTICK
-====================== */
-
-const joystick=document.getElementById("joystick");
-const stick=document.getElementById("stick");
-
-let joyX=0;
-let joyY=0;
-
-function moveJoystick(e){
-  const r=joystick.getBoundingClientRect();
-  const t=e.touches[0];
-
-  let x=t.clientX-(r.left+r.width/2);
-  let y=t.clientY-(r.top+r.height/2);
-
-  const max=43;
-  const d=Math.hypot(x,y);
-
-  if(d>max){
-    x=x/d*max;
-    y=y/d*max;
-  }
-
-  joyX=x/max;
-  joyY=y/max;
-
-  stick.style.left=(32+x)+"px";
-  stick.style.top=(32+y)+"px";
-}
-
-joystick.addEventListener("touchstart",e=>{
-  e.preventDefault();
-  moveJoystick(e);
-},{passive:false});
-
-joystick.addEventListener("touchmove",e=>{
-  e.preventDefault();
-  moveJoystick(e);
-},{passive:false});
-
-joystick.addEventListener("touchend",()=>{
-  joyX=0;
-  joyY=0;
-  stick.style.left="32px";
-  stick.style.top="32px";
-});
-
-/* ======================
-   ÎLES
-====================== */
+let started=false;
+let player={x:0,y:0,hp:100};
+let camera={angle:0,distance:330};
+let keys={};
+let attacking=null;
+let attackTimer=0;
 
 const islands=[
- {name:"Île du Départ",x:0,z:0,r:15},
- {name:"Île des Pirates",x:35,z:-10,r:12},
- {name:"Île Volcanique",x:-38,z:-25,r:13},
- {name:"Île des Neiges",x:60,z:28,r:14},
- {name:"Île du Désert",x:-65,z:35,r:14},
- {name:"Île des Ruines",x:10,z:55,r:12},
- {name:"Île Tropicale",x:80,z:-45,r:15},
- {name:"Île Sombre",x:-80,z:-55,r:16},
- {name:"Île Céleste",x:5,z:-80,r:13},
- {name:"Île du Roi",x:95,z:60,r:18}
+ {x:-700,y:80,r:190,name:"ÎLE DU DÉPART"},
+ {x:-300,y:-480,r:170,name:"ÎLE DES PIRATES"},
+ {x:180,y:420,r:210,name:"ÎLE DE LA JUNGLE"},
+ {x:650,y:-260,r:185,name:"ÎLE DU VOLCAN"},
+ {x:900,y:430,r:220,name:"ÎLE LÉGENDAIRE"}
 ];
 
-/* ======================
-   ENNEMIS
-====================== */
+const trees=[
+ [-700,40],[-620,110],[-760,120],
+ [-300,-510],[-240,-450],
+ [150,400],[240,450],[100,480],
+ [610,-300],[690,-230],
+ [850,400],[950,470],[890,520]
+];
 
-const enemies=[];
-
-for(let i=0;i<16;i++){
-  enemies.push({
-    x:(Math.random()-.5)*130,
-    z:(Math.random()-.5)*130,
-    hp:100,
-    maxHp:100,
-    alive:true
-  });
-}
-
-/* ======================
-   EFFETS
-====================== */
-
-const effects=[];
-
-function createEffect(type){
-  effects.push({
-    x:player.x,
-    z:player.z,
-    type,
-    life:1,
-    size:.5
-  });
-}
-
-/* ======================
-   POUVOIRS
-====================== */
-
-const cooldowns={
- Z:0,
- X:0,
- C:0,
- V:0,
- F:0
+play.onclick=()=>{
+ menu.style.display="none";
+ game.style.display="block";
+ started=true;
+ requestAnimationFrame(loop);
 };
 
-const cooldownMax={
- Z:1,
- X:2,
- C:3,
- V:7,
- F:5
-};
+/* Clavier */
+addEventListener("keydown",e=>{
+ keys[e.key.toLowerCase()]=true;
+ if(["x","z","c","v"].includes(e.key.toLowerCase()))
+   attack(e.key.toUpperCase());
+});
+addEventListener("keyup",e=>keys[e.key.toLowerCase()]=false);
 
-function usePower(p){
+/* Caméra 360° tactile */
+let touchX=null;
+canvas.addEventListener("touchstart",e=>{
+ if(e.touches.length){
+   touchX=e.touches[0].clientX;
+ }
+},{passive:true});
 
-  if(cooldowns[p]>0)return;
+canvas.addEventListener("touchmove",e=>{
+ if(touchX!==null){
+   const x=e.touches[0].clientX;
+   camera.angle+=(x-touchX)*0.012;
+   touchX=x;
+ }
+},{passive:true});
 
-  cooldowns[p]=cooldownMax[p];
+canvas.addEventListener("touchend",()=>touchX=null);
 
-  createEffect(p);
+/* Souris */
+let mouseX=null;
+canvas.addEventListener("mousedown",e=>mouseX=e.clientX);
+canvas.addEventListener("mousemove",e=>{
+ if(mouseX!==null){
+   camera.angle+=(e.clientX-mouseX)*0.012;
+   mouseX=e.clientX;
+ }
+});
+addEventListener("mouseup",()=>mouseX=null);
 
-  let damage=25;
-
-  if(p==="C")damage=50;
-  if(p==="F")damage=70;
-  if(p==="V")damage=100;
-
-  enemies.forEach(enemy=>{
-    if(!enemy.alive)return;
-
-    const d=Math.hypot(
-      enemy.x-player.x,
-      enemy.z-player.z
-    );
-
-    if(d<(p==="V"?15:7)){
-      enemy.hp-=damage;
-
-      if(enemy.hp<=0){
-        enemy.alive=false;
-        player.xp+=35;
-        player.beli+=100;
-      }
-    }
-  });
-
-  if(p==="Z"){
-    player.x+=Math.sin(player.rot)*4;
-    player.z+=Math.cos(player.rot)*4;
-  }
-}
-
-document.querySelectorAll(".power").forEach(btn=>{
-  btn.addEventListener("click",()=>{
-    usePower(btn.dataset.power);
-  });
+/* Attaques */
+document.querySelectorAll(".attack").forEach(b=>{
+ b.onclick=()=>attack(b.dataset.power);
 });
 
-/* ======================
-   UPDATE
-====================== */
+function attack(power){
+ if(!started||attacking)return;
 
-function update(){
-
-  let forward=0;
-  let side=0;
-
-  if(keys["w"]||keys["arrowup"])forward=1;
-  if(keys["s"]||keys["arrowdown"])forward=-1;
-  if(keys["a"]||keys["arrowleft"])side=-1;
-  if(keys["d"]||keys["arrowright"])side=1;
-
-  if(Math.abs(joyX)>.05||Math.abs(joyY)>.05){
-    side=joyX;
-    forward=-joyY;
-  }
-
-  const moveX=
-    Math.sin(camera.angle)*forward+
-    Math.cos(camera.angle)*side;
-
-  const moveZ=
-    Math.cos(camera.angle)*forward-
-    Math.sin(camera.angle)*side;
-
-  if(forward!==0||side!==0){
-    player.x+=moveX*player.speed;
-    player.z+=moveZ*player.speed;
-    player.rot=Math.atan2(moveX,moveZ);
-  }
-
-  /* niveaux */
-
-  if(player.xp>=player.level*100){
-    player.xp=0;
-    player.level++;
-    player.maxHp+=20;
-    player.hp=player.maxHp;
-  }
-
-  /* cooldowns */
-
-  for(const p in cooldowns){
-    cooldowns[p]=Math.max(0,cooldowns[p]-1/60);
-
-    const button=document.querySelector(
-      '[data-power="'+p+'"]'
-    );
-
-    const cd=button.querySelector(".cooldown");
-
-    if(cooldowns[p]>0){
-      cd.style.display="flex";
-      cd.textContent=Math.ceil(cooldowns[p]);
-    }else{
-      cd.style.display="none";
-    }
-  }
-
-  /* effets */
-
-  for(const e of effects){
-    e.life-=.035;
-    e.size+=.12;
-  }
-
-  while(effects.length && effects[0].life<=0){
-    effects.shift();
-  }
-
-  updateUI();
+ attacking=power;
+ attackTimer=22;
 }
 
-/* ======================
-   UI
-====================== */
+function update(){
+ const speed=4;
 
-function updateUI(){
+ let dx=0,dy=0;
 
-  document.getElementById("level").textContent=player.level;
-  d
+ if(keys["w"]||keys["arrowup"])dy-=1;
+ if(keys["s"]||keys["arrowdown"])dy+=1;
+ if(keys["a"]||keys["arrowleft"])dx-=1;
+ if(keys["d"]||keys["arrowright"])dx+=1;
+
+ /* déplacement relatif à la caméra */
+ const ca=Math.cos(camera.angle);
+ const sa=Math.sin(camera.angle);
+
+ const mx=dx*ca-dy*sa;
+ const my=dx*sa+dy*ca;
+
+ player.x+=mx*speed;
+ player.y+=my*speed;
+
+ if(attackTimer>0){
+   attackTimer--;
+   if(attackTimer===0)attacking=null;
+ }
+}
+
+/* Dessin */
+function loop(){
+ update();
+ draw();
+ requestAnimationFrame(loop);
+}
+
+function worldToScreen(x,y){
+ const dx=x-player.x;
+ const dy=y-player.y;
+
+ const c=Math.cos(-camera.angle);
+ const s=Math.sin(-camera.angle);
+
+ const rx=dx*c-dy*s;
+ const ry=dx*s+dy*c;
+
+ return {
+   x:W/2+rx,
+   y:H/2+ry*.72
+ };
+}
+
+function draw(){
+ ctx.clearRect(0,0,W,H);
+
+ /* ciel */
+ const sky=ctx.createLinearGradient(0,0,0,H);
+ sky.addColorStop(0,"#5bc7ff");
+ sky.addColorStop(.55,"#c5f1ff");
+ sky.addColorStop(.56,"#48a6d8");
+ sky.addColorStop(1,"#1570a1");
+ ctx.fillStyle=sky;
+ ctx.fillRect(0,0,W,H);
+
+ /* soleil */
+ ctx.fillStyle="#fff0a0";
+ ctx.beginPath();
+ ctx.arc(W-90,80,42,0,Math.PI*2);
+ ctx.fill();
+
+ /* mer */
+ ctx.fillStyle="#1687bd";
+ ctx.fillRect(0,H*.55,W,H*.45);
+
+ /* îles */
+ islands.forEach(drawIsland);
+
+ /* arbres */
+ trees.forEach(t=>drawTree(t[0],t[1]));
+
+ /* personnage */
+ drawPlayer();
+
+ /* attaque */
+ if(attacking)drawAttack();
+
+ /* direction */
+ drawCrosshair();
+}
+
+function drawIsland(i){
+ const p=worldToScreen(i.x,i.y);
+ const scale=Math.max(.45,1-Math.abs(p.y-H/2)/700);
+ const r=i.r*scale;
+
+ ctx.save();
+
+ /* ombre */
+ ctx.fillStyle="rgba(0,0,0,.25)";
+ ctx.beginPath();
+ ctx.ellipse(p.x,p.y+28,r*1.05,r*.45,0,0,Math.PI*2);
+ ctx.fill();
+
+ /* sable */
+ ctx.fillStyle="#d8b06b";
+ ctx.beginPath();
+ ctx.ellipse(p.x,p.y,r,r*.55,0,0,Math.PI*2);
+ ctx.fill();
+
+ /* herbe */
+ ctx.fillStyle="#3e9e42";
+ ctx.beginPath();
+ ctx.ellipse(p.x,p.y-10,r*.92,r*.48,0,0,Math.PI*2);
+ ctx.fill();
+
+ /* nom */
+ ctx.fillStyle="white";
+ ctx.font="bold 15px Arial";
+ ctx.textAlign="center";
+ ctx.shadowColor="#000";
+ ctx.shadowBlur=5;
+ ctx.fillText(i.name,p.x,p.y-r*.55);
+ ctx.shadowBlur=0;
+
+ ctx.restore();
+}
+
+function drawTree(x,y){
+ const p=worldToScreen(x,y);
+ const s=Math.max(.45,1-Math.abs(p.y-H/2)/700);
+
+ ctx.save();
+ ctx.translate(p.x,p.y);
+ ctx.scale(s,s);
+
+ /* tronc */
+ ctx.fillStyle="#754526";
+ ctx.fillRect(-8,-55,16,55);
+
+ /* feuilles */
+ ctx.fillStyle="#176b2d";
+ ctx.beginPath();
+ ctx.arc(0,-70,34,0,Math.PI*2);
+ ctx.arc(-22,-55,25,0,Math.PI*2);
+ ctx.arc(22,-55,25,0,Math.PI*2);
+ ctx.fill();
+
+ ctx.restore();
+}
+
+function drawPlayer(){
+ const x=W/2;
+ const y=H*.57;
+
+ ctx.save();
+ ctx.translate(x,y);
+
+ let bob=Math.sin(Date.now()/120)*2;
+
+ if(attacking){
+   ctx.rotate(Math.sin(attackTimer/3)*.12);
+ }
+
+ /* ombre */
+ ctx.fillStyle="rgba(0,0,0,.3)";
+ ctx.beginPath();
+ ctx.ellipse(0,42,28,10,0,0,Math.PI*2);
+ ctx.fill();
+
+ /* jambes */
+ ctx.fillStyle="#17243a";
+ ctx.fillRect(-18,25,14,32);
+ ctx.fillRect(4,25,14,32);
+
+ /* chaussures */
+ ctx.fillStyle="#111";
+ ctx.fillRect(-21,52,19,9);
+ ctx.fillRect(2,52,19,9);
+
+ /* corps */
+ const body=ctx.createLinearGradient(-20,-5,20,30);
+ body.addColorStop(0,"#23a8ff");
+ body.addColorStop(1,"#07539b");
+ ctx.fillStyle=body;
+ ctx.fillRect(-22,-15,44,45);
+
+ /* bras */
+ ctx.fillStyle="#b8754d";
+ ctx.fillRect(-34,-10,11,39);
+ ctx.fillRect(23,-10,11,39);
+
+ /* mains */
+ ctx.beginPath();
+ ctx.arc(-29,31,7,0,Math.PI*2);
+ ctx.arc(29,31,7,0,Math.PI*2);
+ ctx.fill();
+
+ /* cou */
+ ctx.fillStyle="#b8754d";
+ ctx.fillRect(-7,-25,14,12);
+
+ /* tête */
+ const skin=ctx.createLinearGradient(-19,-55,19,-20);
+ skin.addColorStop(0,"#d99a69");
+ skin.addColorStop(1,"#a9613d");
+ ctx.fillStyle=skin;
+ ctx.beginPath();
+ ctx.arc(0,-45,22,0,Math.PI*2);
+ ctx.fill();
+
+ /* cheveux */
+ ctx.fillStyle="#16120f";
+ ctx.beginPath();
+ ctx.arc(0,-56,22,Math.PI,Math.PI*2);
+ ctx.fill();
+ ctx.fillRect(-21,-58,42,10);
+
+ /* yeux */
+ ctx.fillStyle="white";
+ ctx.fillRect(-12,-48,7,5);
+ ctx.fillRect(5,-48,7,5);
+
+ ctx.fillStyle="#111";
+ ctx.fillRect(-9,-47,3,3);
+ ctx.fillRect(8,-47,3,3);
+
+ /* bouche */
+ ctx.strokeStyle="#542719";
+ ctx.lineWidth=2;
+ ctx.beginPath();
+ ctx.arc(0,-38,7,0.2,Math.PI-.2);
+ ctx.stroke();
+
+ ctx.restore();
+}
+
+function drawAttack(){
+ const x=W/2+Math.sin(Date.now()/80)*5;
+ const y=H*.57;
+
+ const colors={
+  X:"#ffffff",
+  Z:"#36b7ff",
+  C:"#a05cff",
+  V:"#ffbd35"
+ };
+
+ ctx.save();
+ ctx.strokeStyle=colors[attacking];
+ ctx.shadowColor=colors[attacking];
+ ctx.shadowBlur=25;
+ ctx.lineWidth=9;
+
+ const size=45+(22-attackTimer)*3;
+
+ ctx.beginPath();
+ ctx.arc(x,y-10,size,-1.2,1.2);
+ ctx.stroke();
+
+ ctx.restore();
+
+ /* texte */
+ ctx.fillStyle=colors[attacking];
+ ctx.font="bold 28px Arial";
+ ctx.textAlign="center";
+ ctx.shadowColor="#000";
+ ctx.shadowBlur=6;
+ ctx.fillText("ATTAQUE "+attacking,W/2,H*.34);
+ ctx.shadowBlur=0;
+}
+
+function drawCrosshair(){
+ ctx.strokeStyle="rgba(255,255,255,.4)";
+ ctx.lineWidth=2;
+ ctx.beginPath();
+ ctx.moveTo(W/2-8,H/2);ctx.lineTo(W/2+8,H/2);
+ ctx.moveTo(W/2,H/2-8);ctx.lineTo(W/2,H/2+8);
+ ctx.stroke();
+}
+
+/* Joystick */
+const joystick=document.getElementById("joystick");
+const stick=document.getElementById("stick");
+let joy={x:0,y:0,active:false};
+
+joystick.addEventListener("touchstart",e=>{
+ joy.active=true;
+},{passive:true});
+
+joystick.addEventListener("touchmove",e=>{
+ if(!joy.active)return;
+
+ const r=joystick.getBoundingClientRect();
+ const t=e.touches[0];
+
+ let x=t.clientX-(r.left+r.width/2);
+ let y=t.clientY-(r.top+r.height/2);
+
+ const max=42;
+ const d=Math.hypot(x,y);
+
+ if(d>max){
+   x=x/d*max;
+   y=y/d*max;
+ }
+
+ stick.style.transform=`translate(${x}px,${y}px)`;
+
+ const ca=Math.cos(camera.angle);
+ const sa=Math.sin(camera.angle);
+
+ player.x+=(x/max*4)*ca-(y/max*4)*sa;
+ player.y+=(x/max*4)*sa+(y/max*4)*ca;
+},{passive:true});
+
+addEventListener("touchend",()=>{
+ joy.active=false;
+ stick.style.transform="translate(0,0)";
+});
+
+</script>
+</body>
+</html>
 ```
