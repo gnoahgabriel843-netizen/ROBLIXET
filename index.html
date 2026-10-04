@@ -1,8 +1,9 @@
+```html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Blox Burt</title>
 
 <style>
@@ -12,152 +13,199 @@ html,body{
   width:100%;
   height:100%;
   overflow:hidden;
-  background:#87ceeb;
   font-family:Arial,sans-serif;
-  touch-action:none;
+  background:#fff;
 }
+button{font-family:inherit}
 
-canvas{
-  display:block;
+/* ACCUEIL */
+#menu{
+  position:fixed;
+  inset:0;
+  z-index:20;
+  background:linear-gradient(135deg,#fff 50%,#111 50%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.menuBox{
+  width:min(90%,430px);
+  background:#fff;
+  border:4px solid #111;
+  border-radius:25px;
+  padding:35px 25px;
+  text-align:center;
+  box-shadow:0 15px 40px rgba(0,0,0,.3);
+}
+.logo{
+  font-size:48px;
+  font-weight:900;
+  letter-spacing:3px;
+  color:#111;
+}
+.subtitle{
+  margin:8px 0 30px;
+  color:#555;
+}
+.play{
+  width:100%;
+  padding:18px;
+  border:0;
+  border-radius:14px;
+  background:#111;
+  color:#fff;
+  font-size:22px;
+  font-weight:bold;
+  cursor:pointer;
+}
+.play:active{transform:scale(.97)}
+.gameCard{
+  margin-top:20px;
+  border:2px solid #ddd;
+  border-radius:15px;
+  padding:14px;
+  text-align:left;
+}
+.gameCard b{font-size:20px}
+
+/* JEU */
+#game{
+  position:fixed;
+  inset:0;
   width:100%;
   height:100%;
+  display:none;
+  background:#75c8ff;
 }
 
 #hud{
   position:fixed;
   inset:0;
+  display:none;
   pointer-events:none;
-  color:white;
+  color:#fff;
   text-shadow:2px 2px 3px #000;
 }
 
 #stats{
   position:absolute;
-  top:15px;
-  left:15px;
-  background:rgba(0,0,0,.55);
-  padding:10px 14px;
+  left:12px;
+  top:12px;
+  background:rgba(0,0,0,.6);
+  padding:10px;
   border-radius:12px;
-  min-width:190px;
+  min-width:170px;
 }
 
 .bar{
-  height:12px;
+  width:160px;
+  height:10px;
   background:#333;
-  border-radius:8px;
+  border-radius:10px;
   overflow:hidden;
-  margin-top:5px;
+  margin:4px 0;
 }
-
-#hp{
-  height:100%;
-  width:100%;
-  background:#e53935;
-}
-
-#xp{
-  height:100%;
-  width:0%;
-  background:#ffd600;
-}
+#hp{height:100%;background:#e53935;width:100%}
+#xp{height:100%;background:#ffd600;width:0%}
 
 #islandName{
   position:absolute;
-  top:35px;
+  top:18px;
   left:50%;
   transform:translateX(-50%);
-  font-size:25px;
+  font-size:23px;
   font-weight:bold;
 }
 
 #powers{
   position:absolute;
-  bottom:18px;
+  bottom:15px;
   left:50%;
   transform:translateX(-50%);
   display:flex;
-  gap:9px;
+  gap:7px;
   pointer-events:auto;
 }
 
 .power{
-  width:62px;
-  height:62px;
-  border:2px solid white;
+  width:60px;
+  height:60px;
+  border:2px solid #fff;
   border-radius:14px;
-  background:rgba(0,0,0,.72);
-  color:white;
-  font-size:21px;
+  background:rgba(0,0,0,.75);
+  color:#fff;
   font-weight:bold;
+  font-size:20px;
   position:relative;
 }
-
 .power small{
   display:block;
   font-size:9px;
-  margin-top:3px;
 }
-
 .cooldown{
+  display:none;
   position:absolute;
   inset:0;
-  display:none;
   align-items:center;
   justify-content:center;
   border-radius:12px;
-  background:rgba(0,0,0,.7);
-  font-size:18px;
-}
-
-#mobileLook{
-  position:absolute;
-  right:0;
-  top:0;
-  width:48%;
-  height:75%;
-  pointer-events:auto;
+  background:rgba(0,0,0,.75);
 }
 
 #joystick{
   position:absolute;
-  left:25px;
+  left:20px;
   bottom:25px;
   width:120px;
   height:120px;
   border-radius:50%;
+  border:2px solid rgba(255,255,255,.4);
   background:rgba(255,255,255,.15);
-  border:2px solid rgba(255,255,255,.35);
   pointer-events:auto;
 }
-
 #stick{
   position:absolute;
-  width:55px;
-  height:55px;
-  left:31px;
-  top:31px;
+  width:52px;
+  height:52px;
+  left:32px;
+  top:32px;
   border-radius:50%;
   background:rgba(255,255,255,.45);
 }
 
-#attackInfo{
+#lookArea{
   position:absolute;
-  right:15px;
-  top:15px;
-  padding:8px 12px;
-  background:rgba(0,0,0,.5);
-  border-radius:10px;
+  right:0;
+  top:0;
+  width:50%;
+  height:75%;
+  pointer-events:auto;
 }
 
 @media(max-width:600px){
-  #powers{gap:5px}
-  .power{width:55px;height:55px}
-  #islandName{font-size:20px}
+  .logo{font-size:38px}
+  .power{width:54px;height:54px}
+  #islandName{font-size:18px}
 }
 </style>
 </head>
 
 <body>
+
+<!-- ACCUEIL -->
+<div id="menu">
+  <div class="menuBox">
+    <div class="logo">BLOX BURT</div>
+    <div class="subtitle">Aventure • Combat • Exploration</div>
+
+    <button class="play" id="playButton">▶ JOUER</button>
+
+    <div class="gameCard">
+      🏴‍☠️ <b>Blox Burt</b><br>
+      <span>Explore les îles, combats les ennemis et débloque de nouveaux pouvoirs.</span>
+    </div>
+  </div>
+</div>
 
 <canvas id="game"></canvas>
 
@@ -177,22 +225,18 @@ canvas{
 
   <div id="islandName">Île du Départ</div>
 
-  <div id="attackInfo">
-    Pouvoir : <span id="currentPower">Aucun</span>
-  </div>
-
-  <div id="mobileLook"></div>
-
   <div id="joystick">
     <div id="stick"></div>
   </div>
+
+  <div id="lookArea"></div>
 
   <div id="powers">
     <button class="power" data-power="Z">Z<small>Dash</small><span class="cooldown"></span></button>
     <button class="power" data-power="X">X<small>Slash</small><span class="cooldown"></span></button>
     <button class="power" data-power="C">C<small>Blast</small><span class="cooldown"></span></button>
-    <button class="power" data-power="V">V<small>Ultimate</small><span class="cooldown"></span></button>
-    <button class="power" data-power="F">F<small>Power</small><span class="cooldown"></span></button>
+    <button class="power" data-power="V">V<small>ULTIME</small><span class="cooldown"></span></button>
+    <button class="power" data-power="F">F<small>Wave</small><span class="cooldown"></span></button>
   </div>
 
 </div>
@@ -202,22 +246,35 @@ const canvas=document.getElementById("game");
 const ctx=canvas.getContext("2d");
 
 function resize(){
-  canvas.width=innerWidth;
-  canvas.height=innerHeight;
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
 }
-addEventListener("resize",resize);
 resize();
+window.addEventListener("resize",resize);
 
-/* =========================
+/* ======================
+   MENU
+====================== */
+
+const menu=document.getElementById("menu");
+const game=document.getElementById("game");
+const hud=document.getElementById("hud");
+
+document.getElementById("playButton").addEventListener("click",()=>{
+  menu.style.display="none";
+  game.style.display="block";
+  hud.style.display="block";
+});
+
+/* ======================
    JOUEUR
-========================= */
+====================== */
 
 const player={
   x:0,
   z:0,
-  y:0,
   rot:0,
-  speed:0.11,
+  speed:.13,
   hp:100,
   maxHp:100,
   level:1,
@@ -225,214 +282,207 @@ const player={
   beli:500
 };
 
-/* =========================
-   CAMERA
-========================= */
-
 const camera={
   angle:0,
-  distance:7,
-  height:3
+  distance:7
 };
 
-let keys={};
-let mouseDown=false;
-let lastX=0;
+const keys={};
 
-addEventListener("keydown",e=>{
+window.addEventListener("keydown",e=>{
   keys[e.key.toLowerCase()]=true;
 
-  if(["z","x","c","v","f"].includes(e.key.toLowerCase())){
-    usePower(e.key.toUpperCase());
+  const p=e.key.toUpperCase();
+  if(["Z","X","C","V","F"].includes(p)){
+    usePower(p);
   }
 });
 
-addEventListener("keyup",e=>{
+window.addEventListener("keyup",e=>{
   keys[e.key.toLowerCase()]=false;
 });
 
-/* Caméra souris */
+/* ======================
+   CAMÉRA PC
+====================== */
+
+let dragging=false;
+let lastMouseX=0;
 
 canvas.addEventListener("mousedown",e=>{
-  mouseDown=true;
-  lastX=e.clientX;
+  dragging=true;
+  lastMouseX=e.clientX;
 });
 
-addEventListener("mouseup",()=>{
-  mouseDown=false;
+window.addEventListener("mouseup",()=>{
+  dragging=false;
 });
 
-addEventListener("mousemove",e=>{
-  if(mouseDown){
-    camera.angle+=(e.clientX-lastX)*0.008;
-    lastX=e.clientX;
-  }
+window.addEventListener("mousemove",e=>{
+  if(!dragging)return;
+
+  camera.angle+=(e.clientX-lastMouseX)*.008;
+  lastMouseX=e.clientX;
 });
 
-/* =========================
+/* ======================
    CAMÉRA MOBILE
-========================= */
+====================== */
 
-const look=document.getElementById("mobileLook");
+const lookArea=document.getElementById("lookArea");
+let lastTouchX=0;
 
-let touchX=0;
+lookArea.addEventListener("touchstart",e=>{
+  lastTouchX=e.touches[0].clientX;
+},{passive:true});
 
-look.addEventListener("touchstart",e=>{
-  touchX=e.touches[0].clientX;
-},{passive:false});
-
-look.addEventListener("touchmove",e=>{
-  e.preventDefault();
-
+lookArea.addEventListener("touchmove",e=>{
   const x=e.touches[0].clientX;
-  camera.angle+=(x-touchX)*0.009;
-  touchX=x;
-},{passive:false});
+  camera.angle+=(x-lastTouchX)*.009;
+  lastTouchX=x;
+},{passive:true});
 
-/* =========================
+/* ======================
    JOYSTICK
-========================= */
-
-let joyX=0;
-let joyZ=0;
-let joyActive=false;
+====================== */
 
 const joystick=document.getElementById("joystick");
 const stick=document.getElementById("stick");
 
-function joyMove(e){
+let joyX=0;
+let joyY=0;
+
+function moveJoystick(e){
   const r=joystick.getBoundingClientRect();
-  const p=e.touches[0];
+  const t=e.touches[0];
 
-  let x=p.clientX-(r.left+r.width/2);
-  let y=p.clientY-(r.top+r.height/2);
+  let x=t.clientX-(r.left+r.width/2);
+  let y=t.clientY-(r.top+r.height/2);
 
-  const max=45;
-  const len=Math.hypot(x,y);
+  const max=43;
+  const d=Math.hypot(x,y);
 
-  if(len>max){
-    x=x/len*max;
-    y=y/len*max;
+  if(d>max){
+    x=x/d*max;
+    y=y/d*max;
   }
 
-  stick.style.left=(31+x)+"px";
-  stick.style.top=(31+y)+"px";
-
   joyX=x/max;
-  joyZ=y/max;
+  joyY=y/max;
+
+  stick.style.left=(32+x)+"px";
+  stick.style.top=(32+y)+"px";
 }
 
 joystick.addEventListener("touchstart",e=>{
-  joyActive=true;
-  joyMove(e);
+  e.preventDefault();
+  moveJoystick(e);
 },{passive:false});
 
 joystick.addEventListener("touchmove",e=>{
   e.preventDefault();
-  joyMove(e);
+  moveJoystick(e);
 },{passive:false});
 
 joystick.addEventListener("touchend",()=>{
-  joyActive=false;
   joyX=0;
-  joyZ=0;
-  stick.style.left="31px";
-  stick.style.top="31px";
+  joyY=0;
+  stick.style.left="32px";
+  stick.style.top="32px";
 });
 
-/* =========================
+/* ======================
    ÎLES
-========================= */
+====================== */
 
 const islands=[
-  {name:"Île du Départ",x:0,z:0,r:15},
-  {name:"Île des Pirates",x:35,z:-10,r:12},
-  {name:"Île Volcanique",x:-38,z:-25,r:13},
-  {name:"Île des Neiges",x:60,z:28,r:14},
-  {name:"Île du Désert",x:-65,z:35,r:14},
-  {name:"Île des Ruines",x:10,z:55,r:12},
-  {name:"Île Tropicale",x:80,z:-45,r:15},
-  {name:"Île Sombre",x:-80,z:-55,r:16},
-  {name:"Île Céleste",x:5,z:-80,r:13},
-  {name:"Île du Roi",x:95,z:60,r:18}
+ {name:"Île du Départ",x:0,z:0,r:15},
+ {name:"Île des Pirates",x:35,z:-10,r:12},
+ {name:"Île Volcanique",x:-38,z:-25,r:13},
+ {name:"Île des Neiges",x:60,z:28,r:14},
+ {name:"Île du Désert",x:-65,z:35,r:14},
+ {name:"Île des Ruines",x:10,z:55,r:12},
+ {name:"Île Tropicale",x:80,z:-45,r:15},
+ {name:"Île Sombre",x:-80,z:-55,r:16},
+ {name:"Île Céleste",x:5,z:-80,r:13},
+ {name:"Île du Roi",x:95,z:60,r:18}
 ];
 
-/* =========================
+/* ======================
    ENNEMIS
-========================= */
+====================== */
 
 const enemies=[];
 
-for(let i=0;i<18;i++){
+for(let i=0;i<16;i++){
   enemies.push({
-    x:(Math.random()-0.5)*150,
-    z:(Math.random()-0.5)*150,
+    x:(Math.random()-.5)*130,
+    z:(Math.random()-.5)*130,
     hp:100,
     maxHp:100,
-    alive:true,
-    size:1
+    alive:true
   });
 }
 
-/* =========================
+/* ======================
    EFFETS
-========================= */
+====================== */
 
 const effects=[];
 
-function effect(x,z,type){
+function createEffect(type){
   effects.push({
-    x,z,
+    x:player.x,
+    z:player.z,
     type,
     life:1,
-    size:1
+    size:.5
   });
 }
 
-/* =========================
+/* ======================
    POUVOIRS
-========================= */
+====================== */
 
 const cooldowns={
-  Z:0,
-  X:0,
-  C:0,
-  V:0,
-  F:0
+ Z:0,
+ X:0,
+ C:0,
+ V:0,
+ F:0
 };
 
-const powerData={
-  Z:{cooldown:1,name:"Dash"},
-  X:{cooldown:2,name:"Slash"},
-  C:{cooldown:3,name:"Energy Blast"},
-  V:{cooldown:7,name:"Ultimate"},
-  F:{cooldown:5,name:"Power Wave"}
+const cooldownMax={
+ Z:1,
+ X:2,
+ C:3,
+ V:7,
+ F:5
 };
 
 function usePower(p){
 
   if(cooldowns[p]>0)return;
 
-  cooldowns[p]=powerData[p].cooldown;
+  cooldowns[p]=cooldownMax[p];
 
-  document.getElementById("currentPower").textContent=
-    powerData[p].name;
-
-  effect(player.x,player.z,p);
+  createEffect(p);
 
   let damage=25;
 
-  if(p==="V") damage=100;
-  if(p==="C") damage=50;
-  if(p==="F") damage=70;
+  if(p==="C")damage=50;
+  if(p==="F")damage=70;
+  if(p==="V")damage=100;
 
   enemies.forEach(enemy=>{
     if(!enemy.alive)return;
 
-    const dx=enemy.x-player.x;
-    const dz=enemy.z-player.z;
+    const d=Math.hypot(
+      enemy.x-player.x,
+      enemy.z-player.z
+    );
 
-    if(Math.hypot(dx,dz)<(p==="V"?13:7)){
+    if(d<(p==="V"?15:7)){
       enemy.hp-=damage;
 
       if(enemy.hp<=0){
@@ -449,17 +499,15 @@ function usePower(p){
   }
 }
 
-/* Boutons pouvoirs */
-
 document.querySelectorAll(".power").forEach(btn=>{
   btn.addEventListener("click",()=>{
     usePower(btn.dataset.power);
   });
 });
 
-/* =========================
-   MISE À JOUR
-========================= */
+/* ======================
+   UPDATE
+====================== */
 
 function update(){
 
@@ -471,9 +519,9 @@ function update(){
   if(keys["a"]||keys["arrowleft"])side=-1;
   if(keys["d"]||keys["arrowright"])side=1;
 
-  if(joyActive){
-    forward=-joyZ;
+  if(Math.abs(joyX)>.05||Math.abs(joyY)>.05){
     side=joyX;
+    forward=-joyY;
   }
 
   const moveX=
@@ -485,14 +533,12 @@ function update(){
     Math.sin(camera.angle)*side;
 
   if(forward!==0||side!==0){
-
-    player.x+=moveX*player.speed*2;
-    player.z+=moveZ*player.speed*2;
-
+    player.x+=moveX*player.speed;
+    player.z+=moveZ*player.speed;
     player.rot=Math.atan2(moveX,moveZ);
   }
 
-  /* XP / niveaux */
+  /* niveaux */
 
   if(player.xp>=player.level*100){
     player.xp=0;
@@ -503,14 +549,11 @@ function update(){
 
   /* cooldowns */
 
-  Object.keys(cooldowns).forEach(p=>{
-    if(cooldowns[p]>0){
-      cooldowns[p]-=1/60;
-      if(cooldowns[p]<0)cooldowns[p]=0;
-    }
+  for(const p in cooldowns){
+    cooldowns[p]=Math.max(0,cooldowns[p]-1/60);
 
     const button=document.querySelector(
-      `.power[data-power="${p}"]`
+      '[data-power="'+p+'"]'
     );
 
     const cd=button.querySelector(".cooldown");
@@ -521,513 +564,28 @@ function update(){
     }else{
       cd.style.display="none";
     }
-  });
+  }
 
   /* effets */
 
-  effects.forEach(e=>{
-    e.life-=0.035;
-    e.size+=0.18;
-  });
+  for(const e of effects){
+    e.life-=.035;
+    e.size+=.12;
+  }
 
-  while(effects.length && effects[0].life<=0)
+  while(effects.length && effects[0].life<=0){
     effects.shift();
+  }
 
   updateUI();
 }
 
-/* =========================
+/* ======================
    UI
-========================= */
+====================== */
 
 function updateUI(){
 
   document.getElementById("level").textContent=player.level;
-  document.getElementById("beli").textContent=player.beli;
-
-  document.getElementById("hp").style.width=
-    (player.hp/player.maxHp*100)+"%";
-
-  document.getElementById("xp").style.width=
-    (player.xp/(player.level*100)*100)+"%";
-
-  let nearest=null;
-  let dist=Infinity;
-
-  islands.forEach(i=>{
-    const d=Math.hypot(i.x-player.x,i.z-player.z);
-
-    if(d<dist){
-      dist=d;
-      nearest=i;
-    }
-  });
-
-  document.getElementById("islandName").textContent=
-    dist<25 ? nearest.name : "Océan";
-}
-
-/* =========================
-   PROJECTION 3D SIMPLE
-========================= */
-
-function project(x,y,z){
-
-  const dx=x-player.x;
-  const dz=z-player.z;
-
-  const sin=Math.sin(camera.angle);
-  const cos=Math.cos(camera.angle);
-
-  const rx=dx*cos-dz*sin;
-  const rz=dx*sin+dz*cos;
-
-  const depth=rz+camera.distance;
-
-  if(depth<=0.2)return null;
-
-  const scale=430/depth;
-
-  return{
-    x:canvas.width/2+rx*scale,
-    y:canvas.height/2+(camera.height-y)*scale,
-    scale
-  };
-}
-
-/* =========================
-   DESSIN
-========================= */
-
-function draw(){
-
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-
-  /* ciel */
-
-  const sky=ctx.createLinearGradient(0,0,0,canvas.height);
-  sky.addColorStop(0,"#67b7ff");
-  sky.addColorStop(1,"#dff6ff");
-
-  ctx.fillStyle=sky;
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-
-  /* océan */
-
-  ctx.fillStyle="#187fc2";
-
-  const water=project(0,-0.3,0);
-
-  if(water){
-    ctx.fillRect(0,canvas.height/2,canvas.width,canvas.height/2);
-  }
-
-  /* îles */
-
-  islands.forEach(island=>{
-
-    const p=project(island.x,0,island.z);
-    if(!p)return;
-
-    const s=island.r*p.scale;
-
-    ctx.fillStyle=
-      island.name==="Île Volcanique"
-      ? "#555"
-      : "#5fae52";
-
-    ctx.beginPath();
-    ctx.ellipse(
-      p.x,
-      p.y,
-      s,
-      s*.45,
-      0,0,Math.PI*2
-    );
-    ctx.fill();
-
-    /* arbres */
-
-    for(let i=0;i<4;i++){
-
-      const tx=island.x+
-        Math.cos(i*1.7)*island.r*.5;
-
-      const tz=island.z+
-        Math.sin(i*1.7)*island.r*.5;
-
-      const tree=project(tx,0,tz);
-
-      if(tree){
-        ctx.fillStyle="#70452a";
-        ctx.fillRect(
-          tree.x-3*tree.scale,
-          tree.y-25*tree.scale,
-          6*tree.scale,
-          25*tree.scale
-        );
-
-        ctx.fillStyle="#198b43";
-
-        ctx.beginPath();
-        ctx.arc(
-          tree.x,
-          tree.y-28*tree.scale,
-          14*tree.scale,
-          0,Math.PI*2
-        );
-        ctx.fill();
-      }
-    }
-
-    /* nom */
-
-    if(s<500){
-
-      ctx.font="bold 16px Arial";
-      ctx.textAlign="center";
-      ctx.fillStyle="white";
-      ctx.strokeStyle="black";
-      ctx.lineWidth=4;
-
-      ctx.strokeText(
-        island.name,
-        p.x,
-        p.y-40
-      );
-
-      ctx.fillText(
-        island.name,
-        p.x,
-        p.y-40
-      );
-    }
-  });
-
-  /* ennemis */
-
-  enemies.forEach(enemy=>{
-
-    if(!enemy.alive)return;
-
-    const p=project(enemy.x,0,enemy.z);
-    if(!p)return;
-
-    const s=35*p.scale;
-
-    /* corps */
-
-    ctx.fillStyle="#5b2c83";
-    ctx.fillRect(
-      p.x-s*.4,
-      p.y-s,
-      s*.8,
-      s*1.3
-    );
-
-    /* tête */
-
-    ctx.fillStyle="#d99b72";
-
-    ctx.beginPath();
-    ctx.arc(
-      p.x,
-      p.y-s*1.25,
-      s*.42,
-      0,Math.PI*2
-    );
-    ctx.fill();
-
-    /* barre vie */
-
-    ctx.fillStyle="#222";
-    ctx.fillRect(
-      p.x-s,
-      p.y-s*1.8,
-      s*2,
-      5
-    );
-
-    ctx.fillStyle="#e33";
-    ctx.fillRect(
-      p.x-s,
-      p.y-s*1.8,
-      s*2*(enemy.hp/enemy.maxHp),
-      5
-    );
-  });
-
-  /* joueur */
-
-  drawPlayer();
-
-  /* effets */
-
-  effects.forEach(e=>drawEffect(e));
-}
-
-/* =========================
-   PERSONNAGE DÉTAILLÉ
-========================= */
-
-function drawPlayer(){
-
-  const p=project(player.x,0,player.z);
-  if(!p)return;
-
-  const s=48*p.scale;
-
-  ctx.save();
-
-  /* ombre */
-
-  ctx.fillStyle="rgba(0,0,0,.35)";
-  ctx.beginPath();
-  ctx.ellipse(
-    p.x,
-    p.y+4,
-    s*.75,
-    s*.25,
-    0,0,Math.PI*2
-  );
-  ctx.fill();
-
-  /* jambes */
-
-  ctx.fillStyle="#222";
-
-  ctx.fillRect(
-    p.x-s*.42,
-    p.y,
-    s*.32,
-    s*.75
-  );
-
-  ctx.fillRect(
-    p.x+s*.10,
-    p.y,
-    s*.32,
-    s*.75
-  );
-
-  /* chaussures */
-
-  ctx.fillStyle="#111";
-
-  ctx.fillRect(
-    p.x-s*.5,
-    p.y+s*.65,
-    s*.45,
-    s*.2
-  );
-
-  ctx.fillRect(
-    p.x+s*.08,
-    p.y+s*.65,
-    s*.45,
-    s*.2
-  );
-
-  /* corps */
-
-  ctx.fillStyle="#e63946";
-
-  ctx.fillRect(
-    p.x-s*.48,
-    p.y-s*.65,
-    s*.96,
-    s*.9
-  );
-
-  /* bras */
-
-  ctx.fillStyle="#d99b72";
-
-  ctx.fillRect(
-    p.x-s*.72,
-    p.y-s*.55,
-    s*.25,
-    s*.85
-  );
-
-  ctx.fillRect(
-    p.x+s*.47,
-    p.y-s*.55,
-    s*.25,
-    s*.85
-  );
-
-  /* mains */
-
-  ctx.beginPath();
-  ctx.arc(
-    p.x-s*.6,
-    p.y+s*.3,
-    s*.17,
-    0,Math.PI*2
-  );
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.arc(
-    p.x+s*.6,
-    p.y+s*.3,
-    s*.17,
-    0,Math.PI*2
-  );
-  ctx.fill();
-
-  /* cou */
-
-  ctx.fillStyle="#d99b72";
-  ctx.fillRect(
-    p.x-s*.16,
-    p.y-s*.82,
-    s*.32,
-    s*.22
-  );
-
-  /* tête */
-
-  ctx.beginPath();
-  ctx.arc(
-    p.x,
-    p.y-s*1.08,
-    s*.48,
-    0,Math.PI*2
-  );
-  ctx.fill();
-
-  /* cheveux */
-
-  ctx.fillStyle="#161616";
-
-  ctx.beginPath();
-
-  for(let i=0;i<10;i++){
-
-    const a=Math.PI*2*i/10;
-
-    ctx.lineTo(
-      p.x+Math.cos(a)*s*.55,
-      p.y-s*1.08+
-      Math.sin(a)*s*.55
-    );
-  }
-
-  ctx.fill();
-
-  /* visage */
-
-  ctx.fillStyle="#111";
-
-  ctx.beginPath();
-  ctx.arc(
-    p.x-s*.16,
-    p.y-s*1.12,
-    s*.045,
-    0,Math.PI*2
-  );
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.arc(
-    p.x+s*.16,
-    p.y-s*1.12,
-    s*.045,
-    0,Math.PI*2
-  );
-  ctx.fill();
-
-  ctx.restore();
-}
-
-/* =========================
-   EFFETS
-========================= */
-
-function drawEffect(e){
-
-  const p=project(e.x,0,e.z);
-  if(!p)return;
-
-  const r=70*e.size*p.scale;
-
-  ctx.save();
-  ctx.globalAlpha=Math.max(0,e.life);
-
-  if(e.type==="Z"){
-    ctx.strokeStyle="#ffffff";
-    ctx.lineWidth=8;
-  }
-
-  if(e.type==="X"){
-    ctx.strokeStyle="#ff4040";
-    ctx.lineWidth=10;
-  }
-
-  if(e.type==="C"){
-    ctx.strokeStyle="#00e5ff";
-    ctx.lineWidth=12;
-  }
-
-  if(e.type==="V"){
-    ctx.strokeStyle="#ffd600";
-    ctx.lineWidth=18;
-  }
-
-  if(e.type==="F"){
-    ctx.strokeStyle="#b000ff";
-    ctx.lineWidth=15;
-  }
-
-  ctx.beginPath();
-  ctx.arc(
-    p.x,
-    p.y,
-    r,
-    0,
-    Math.PI*2
-  );
-  ctx.stroke();
-
-  /* particules */
-
-  for(let i=0;i<8;i++){
-
-    const a=i*Math.PI/4;
-
-    ctx.fillStyle=ctx.strokeStyle;
-
-    ctx.beginPath();
-
-    ctx.arc(
-      p.x+Math.cos(a)*r,
-      p.y+Math.sin(a)*r,
-      4+e.size*2,
-      0,Math.PI*2
-    );
-
-    ctx.fill();
-  }
-
-  ctx.restore();
-}
-
-/* =========================
-   BOUCLE
-========================= */
-
-function loop(){
-
-  update();
-  draw();
-
-  requestAnimationFrame(loop);
-}
-
-loop();
-</script>
-
-</body>
-  </html>
+  d
+```
