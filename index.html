@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Battle Island</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#78b9e8;font-family:Arial,sans-serif;touch-action:none}
+canvas{display:block}
+#menu{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:linear-gradient(#69b9ef,#d7f1ff);color:white}
+.panel{width:min(94vw,560px);max-height:94vh;overflow:auto;background:rgba(10,20,35,.9);border:2px solid #fff4;border-radius:24px;padding:24px;box-shadow:0 15px 50px #0008}
+h1{text-align:center;font-size:42px;margin:5px 0 20px;text-shadow:0 4px 0 #0006}
+h2{margin:10px 0}.row{display:flex;gap:10px;flex-wrap:wrap}.choice{flex:1;min-width:120px;padding:14px;border:2px solid #ffffff33;border-radius:14px;background:#ffffff12;color:white;font-weight:bold}.choice.active{border-color:#5ee7ff;background:#168bb855}
+button{border:0;border-radius:13px;padding:13px 18px;font-weight:bold;font-size:16px;cursor:pointer}
+.primary{width:100%;margin-top:18px;background:#e83b35;color:white;font-size:22px}
+.secondary{background:#ffffff18;color:white;border:1px solid #fff3}
+#hud{display:none;position:fixed;inset:0;z-index:10;color:white;pointer-events:none}
+#top{position:absolute;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;gap:8px;text-shadow:0 2px 3px #000}
+.box{background:#07101ccc;border:1px solid #fff3;border-radius:12px;padding:8px 12px}
+.bar{width:180px;height:16px;background:#111;border-radius:9px;overflow:hidden}.fill{height:100%;width:100%}.hp{background:#31db66}.shield{background:#42a8ff}
+#cross{position:absolute;left:50%;top:50%;width:22px;height:22px;transform:translate(-50%,-50%);opacity:.9}.cross:before,.cross:after{content:"";position:absolute;background:white}.cross:before{width:22px;height:2px;top:10px}.cross:after{width:2px;height:22px;left:10px}
+#controls{position:absolute;inset:0;pointer-events:none}.btn{position:absolute;pointer-events:auto;border:2px solid #fff8;border-radius:50%;background:#111a;color:white;display:flex;align-items:center;justify-content:center;font-size:23px;font-weight:bold;user-select:none}
+#fire{right:25px;bottom:105px;width:82px;height:82px;background:#d92f2fcc}.jump{right:125px;bottom:28px;width:58px;height:58px}.pick{right:30px;bottom:205px;width:58px;height:58px}.build{right:105px;bottom:205px;width:58px;height:58px}.edit{right:180px;bottom:205px;width:58px;height:58px}.use{right:105px;bottom:105px;width:58px;height:58px}
+#buildbar{display:none;position:absolute;right:20px;bottom:275px;gap:7px;pointer-events:auto}.buildopt{width:58px;height:48px;background:#1976d2dd;color:white;border-radius:10px;border:1px solid #fff5;font-weight:bold}
+#joystick{display:none;position:absolute;left:0;bottom:0;width:50%;height:55%;pointer-events:auto}.stick{position:absolute;width:100px;height:100px;border:2px solid #fff5;border-radius:50%;background:#ffffff12;display:none}.knob{position:absolute;width:44px;height:44px;border-radius:50%;background:#fff8;left:28px;top:28px}
+#mini{position:absolute;right:12px;top:78px;width:130px;height:130px;border-radius:50%;border:2px solid white;background:#163b29aa}
+#message{position:absolute;left:50%;top:22%;transform:translateX(-50%);font-size:25px;font-weight:bold;text-align:center;text-shadow:0 3px 4px #000;opacity:0;transition:.2s}
+#settings{display:none;position:fixed;z-index:30;inset:0;background:#0009;align-items:center;justify-content:center}.settings{width:min(94vw,600px);max-height:94vh;overflow:auto;background:#172333;color:white;padding:22px;border-radius:20px}
+label{display:block;margin:13px 0}input[type=range]{width:100%}select{padding:10px;border-radius:8px;width:100%}
+#editHint{position:absolute;top:55px;left:50%;transform:translateX(-50%);background:#1c8bffcc;padding:8px 14px;border-radius:10px;display:none}
+@media(min-width:800px){#controls .btn{display:none}#joystick{display:none}}
+</style>
+</head>
+<body>
+<div id="menu"><div class="panel">
+<h1>⚡ BATTLE ISLAND</h1>
+<div id="menuText"></div>
+<h2 id="modeTitle">Mode</h2>
+<div class="row"><button class="choice active" data-mode="br">Battle Royale<br>20 joueurs</button><button class="choice" data-mode="duel">1v1 Duel</button></div>
+<h2>Map</h2><div class="row"><button class="choice active" data-map="island">🌿 Île</button><button class="choice" data-map="desert">🏜️ Désert</button><button class="choice" data-map="snow">❄️ Neige</button></div>
+<button class="primary" id="play">JOUER</button>
+<button class="secondary" id="settingsBtn" style="width:100%;margin-top:10px">⚙️ Paramètres</button>
+<p style="opacity:.7;text-align:center">PC : WASD · souris · E · F · G · Z/X/C · 1/2</p>
+</div></div>
+
+<div id="settings"><div class="settings">
+<h2>⚙️ Paramètres</h2>
+<label>Sensibilité : <input id="sens" type="range" min=".3" max="3" step=".1"></label>
+<label>Champ de vision : <input id="fov" type="range" min="60" max="100" step="1"></label>
+<label>Taille des boutons : <input id="btnsize" type="range" min=".7" max="1.5" step=".05"></label>
+<label>Opacité des boutons : <input id="opacity" type="range" min=".3" max="1" step=".05"></label>
+<label><input id="invert" type="checkbox"> Inverser l'axe vertical</label>
+<label><input id="shadows" type="checkbox"> Ombres / haute qualité</label>
+<label>Langue
+<select id="lang"><option value="fr">Français</option><option value="en">English</option><option value="es">Español</option></select></label>
+<button id="place" class="secondary">📍 Placer les boutons</button>
+<button id="resetButtons" class="secondary">Réinitialiser les boutons</button>
+<button id="closeSettings" class="primary">Terminé</button>
+<p style="opacity:.7">Le joystick reste flottant. Les réglages sont sauvegardés sur cet appareil.</p>
+</div></div>
+
+<div id="hud">
+<div id="top">
+<div class="box"><div>❤️ <span id="hpText">100</span> / 100</div><div class="bar"><div id="hp" class="fill hp"></div></div><div>🛡️ <span id="shieldText">0</span></div><div class="bar"><div id="shield" class="fill shield"></div></div></div>
+<div class="box">👥 <span id="alive">20</span> · 🌪️ <span id="stormText">100%</span><br>🪵 <span id="wood">100</span> · 🔫 <span id="ammo">30</span></div>
+</div>
+<div id="mini"></div><div id="cross" class="cross"></div><div id="message"></div><div id="editHint">✏️ Mode édition : vise une construction puis appuie sur G / ✏️</div>
+<div id="joystick"><div class="stick"><div class="knob"></div></div></div>
+<div id="controls">
+<div id="fire" class="btn">🔫</div><div id="jump" class="btn jump">⤒</div><div id="pick" class="btn pick">⛏</div><div id="build" class="btn build">🧱</div><div id="edit" class="btn edit">✏️</div><div id="use" class="btn use">✋</div>
+<div id="buildbar"><button class="buildopt" data-piece="wall">MUR</button><button class="buildopt" data-piece="floor">SOL</button><button class="buildopt" data-piece="ramp">RAMPE</button></div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const saved=JSON.parse(localStorage.getItem("battleIslandSettings")||"{}");
+const settings={sens:saved.sens??1,fov:saved.fov??75,btnsize:saved.btnsize??1,opacity:saved.opacity??.8,invert:saved.invert??false,shadows:saved.shadows??true,lang:saved.lang??"fr"};
+let mode="br", mapType="island", playing=false, buildMode=false, editMode=false, selectedPiece="wall", placementMode=false;
+document.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-mode]").forEach(x=>x.classList.remove("active"));b.classList.add("active");mode=b.dataset.mode});
+document.querySelectorAll("[data-map]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-map]").forEach(x=>x.classList.remove("active"));b.classList.add("active");mapType=b.dataset.map});
+function loadSettings(){for(const k of ["sens","fov","btnsize","opacity"]) $(k).value=settings[k];$("invert").checked=settings.invert;$("shadows").checked=settings.shadows;$("lang").value=settings.lang}
+function saveSettings(){["sens","fov","btnsize","opacity"].forEach(k=>settings[k]=+$(k).value);settings.invert=$("invert").checked;settings.shadows=$("shadows").checked;settings.lang=$("lang").value;localStorage.setItem("battleIslandSettings",JSON.stringify(settings))}
+loadSettings();
+$("settingsBtn").onclick=()=>{$("settings").style.display="flex";loadSettings()};
+$("closeSettings").onclick=()=>{saveSettings();$("settings").style.display="none";applySettings()};
+$("place").onclick=()=>{$("place").textContent="Déplace les boutons puis appuie sur Terminé";document.querySelectorAll("#controls .btn").forEach(b=>{b.style.outline="3px solid #ffd400";b.style.touchAction="none"});setTimeout(()=>document.querySelectorAll("#controls .btn").forEach(b=>b.style.outline=""),2500)};
+$("resetButtons").onclick=()=>{document.querySelectorAll("#controls .btn").forEach(b=>{b.style.right="";b.style.bottom="";b.style.left="";b.style.top=""})};
+function applySettings(){if(!playing)return;camera.fov=settings.fov;camera.updateProjectionMatrix();document.querySelectorAll(".btn").forEach(b=>{b.style.opacity=settings.opacity;b.style.transform=`scale(${settings.btnsize})`})}
+$("play").onclick=()=>start();
+
+let scene,camera,renderer,clock,player,weapon,aimRay,mouseX=0,mouseY=0,camYaw=0,camPitch=.25;
+let keys={},velocity=new THREE.Vector3(),bots=[],bullets=[],builds=[],chests=[],trees=[],particles=[],stormRadius=95,stormDamageTimer=0,gameTime=0,playerHP=100,playerShield=0,wood=100,ammo=30;
+const worldSize=190, groundY=0;
+const raycaster=new THREE.Raycaster();
+
+function mat(c){return new THREE.MeshStandardMaterial({color:c,roughness:.8,metalness:0})}
+function box(w,h,d,c){return new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(c))}
+function makePlayer(color=0x2d75ff){
+ const g=new THREE.Group(); const body=box(1,1.5,.65,color);body.position.y=1.8;g.add(body);
+ const head=new THREE.Mesh(new THREE.SphereGeometry(.42,16,12),mat(0xffc28b));head.position.y=2.85;g.add(head);
+ for(const s of [-1,1]){let a=box(.3,1.35,.3,color);a.position.set(s*.7,1.82,0);a.rotation.z=s*.12;g.add(a);let l=box(.34,1.35,.34,0x26364f);l.position.set(s*.28,.65,0);g.add(l)}
+ let gun=box(.18,.18,1.2,0x202020);gun.position.set(.72,2.05,-.65);gun.rotation.x=-.08;g.add(gun);g.userData={gun};return g;
+}
+function makeTree(x,z){let g=new THREE.Group();let trunk=box(.65,3,.65,0x6f4327);trunk.position.y=1.5;g.add(trunk);for(let i=0;i<4;i++){let crown=new THREE.Mesh(new THREE.SphereGeometry(1.3,10,8),mat(mapType==="snow"?0xeaf7ff:0x2e9b4b));crown.position.set((i%2-.5)*1.1,3.3+(i%2)*.5,(i<2?-.5:.5));g.add(crown)}g.position.set(x,0,z);scene.add(g);trees.push(g)}
+function makeHouse(x,z){let g=new THREE.Group();let base=box(7,4,6,0xc9a06b);base.position.y=2;g.add(base);let roof=new THREE.Mesh(new THREE.ConeGeometry(5.2,2.8,4),mat(mapType==="snow"?0xddeeff:0x8d3e32));roof.position.y=5;roof.rotation.y=Math.PI/4;g.add(roof);for(let s of [-1,1]){let win=box(1.4,1.1,.1,0x74c8e8);win.position.set(s*2,2.5,-3.03);g.add(win)}let door=box(1.2,2,.1,0x51311e);door.position.set(0,1,-3.04);g.add(door);g.position.set(x,0,z);scene.add(g)}
+function makeChest(x,z){let c=box(1.5,1,.9,0xe7a91d);c.position.set(x,.55,z);scene.add(c);chests.push({mesh:c,used:false})}
+function groundColor(){return mapType==="desert"?0xd6b06a:mapType==="snow"?0xe9f3f7:0x55a84b}
+function initScene(){
+ scene=new THREE.Scene();scene.background=new THREE.Color(mapType==="snow"?0xb9d8ed:mapType==="desert"?0xf0c27b:0x75bde9);
+ scene.fog=new THREE.Fog(scene.background,70,220);
+ camera=new THREE.PerspectiveCamera(settings.fov,innerWidth/innerHeight,.1,500);
+ renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.shadowMap.enabled=settings.shadows;document.body.appendChild(renderer.domElement);
+ scene.add(new THREE.HemisphereLight(0xffffff,0x567040,1.7));let sun=new THREE.DirectionalLight(0xffffff,2);sun.position.set(50,90,20);sun.castShadow=settings.shadows;scene.add(sun);
+ let g=box(worldSize,.5,worldSize,groundColor());g.position.y=-.25;g.receiveShadow=true;scene.add(g);
+ // decorative clouds
+ for(let i=0;i<8;i++){let cl=new THREE.Group();for(let j=0;j<4;j++){let s=new THREE.Mesh(new THREE.SphereGeometry(2+Math.random()*2,10,8),mat(0xffffff));s.position.set(j*2,Math.random(),Math.random()*2);cl.add(s)}cl.position.set(-80+i*25,55+(i%2)*7,-80+(i%3)*45);scene.add(cl)}
+ const count=mapType==="desert"?9:14;for(let i=0;i<count;i++){let x=(Math.random()-.5)*150,z=(Math.random()-.5)*150;if(Math.hypot(x,z)>20)makeTree(x,z)}
+ for(let i=0;i<7;i++){let x=(Math.random()-.5)*130,z=(Math.random()-.5)*130;if(Math.hypot(x,z)>18)makeHouse(x,z)}
+ for(let i=0;i<9;i++){let x=(Math.random()-.5)*150,z=(Math.random()-.5)*150;makeChest(x,z)}
+ player=makePlayer();player.position.set(0,0,12);scene.add(player);
+ weapon=player.userData.gun;
+ clock=new THREE.Clock();
+ window.addEventListener("resize",resize);setupInputs();applySettings();requestAnimationFrame(loop);
+}
+function spawnBot(i){let b=makePlayer(0xc82f36);let a=Math.random()*Math.PI*2,r=30+Math.random()*55;b.position.set(Math.cos(a)*r,0,Math.sin(a)*r);b.userData={hp:100,cool:Math.random()*2,target:player,speed:2+Math.random()*1.5};scene.add(b);bots.push(b)}
+function start(){if(playing)return;playing=true;$("menu").style.display="none";$("hud").style.display="block";initScene();let n=mode==="br"?19:1;for(let i=0;i<n;i++)spawnBot(i);updateHUD();if(mode==="duel"){wood=300;ammo=150;stormRadius=48;showMsg("1V1 — Élimine ton adversaire !",2)}else showMsg("Dernier survivant gagne !",2)}
+function resize(){if(!camera)return;camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)}
+function setupInputs(){
+ addEventListener("keydown",e=>{keys[e.key.toLowerCase()]=true;if(e.key.toLowerCase()==="e")useNearest();if(e.key.toLowerCase()==="f")buildPiece();if(e.key.toLowerCase()==="g")editNearest();if(e.key.toLowerCase()==="z")selectBuild("wall");if(e.key.toLowerCase()==="x")selectBuild("floor");if(e.key.toLowerCase()==="c")selectBuild("ramp");if(e.key==="1")tool="pick";if(e.key==="2")tool="gun"});
+ addEventListener("keyup",e=>keys[e.key.toLowerCase()]=false);
+ renderer.domElement.addEventListener("click",()=>{if(innerWidth>800)renderer.domElement.requestPointerLock?.()});
+ document.addEventListener("mousemove",e=>{if(document.pointerLockElement===renderer.domElement){camYaw-=e.movementX*.003*settings.sens;camPitch-=e.movementY*.002*settings.sens*(settings.invert?-1:1);camPitch=Math.max(-.45,Math.min(.7,camPitch))}});
+ $("fire").onpointerdown=e=>{e.preventDefault();fire()};
+ $("jump").onpointerdown=e=>{velocity.y=7};
+ $("pick").onpointerdown=e=>{tool=tool==="pick"?"gun":"pick";showMsg(tool==="pick"?"⛏ Pioche":"🔫 Arme",.8)};
+ $("build").onpointerdown=e=>{buildMode=!buildMode;$("buildbar").style.display=buildMode?"flex":"none";showMsg(buildMode?"Mode construction":"Mode arme",.8)};
+ $("edit").onpointerdown=e=>editNearest();
+ $("use").onpointerdown=e=>useNearest();
+ document.querySelectorAll(".buildopt").forEach(b=>b.onpointerdown=()=>selectBuild(b.dataset.piece));
+ let touch={id:null,x:0,y:0};renderer.domElement.addEventListener("pointerdown",e=>{if(e.clientX<innerWidth*.5)return;touch={id:e.pointerId,x:e.clientX,y:e.clientY}});
+ renderer.domElement.addEventListener("pointermove",e=>{if(touch.id!==e.pointerId)return;let dx=e.clientX-touch.x,dy=e.clientY-touch.y;camYaw-=dx*.008*settings.sens;camPitch-=dy*.006*settings.sens*(settings.invert?-1:1);camPitch=Math.max(-.45,Math.min(.7,camPitch));touch.x=e.clientX;touch.y=e.clientY});
+ renderer.domElement.addEventListener("pointerup",e=>{if(touch.id===e.pointerId)touch.id=null});
+ const joy=$("joystick"),stick=joy.querySelector(".stick"),knob=joy.querySelector(".knob");let joyData=null;
+ joy.addEventListener("pointerdown",e=>{joyData={x:e.clientX,y:e.clientY};stick.style.display="block";stick.style.left=(e.clientX-50)+"px";stick.style.top=(e.clientY-50)+"px";joy.setPointerCapture(e.pointerId)});
+ joy.addEventListener("pointermove",e=>{if(!joyData)return;let dx=e.clientX-joyData.x,dy=e.clientY-joyData.y;let d=Math.hypot(dx,dy),m=Math.min(38,d),a=Math.atan2(dy,dx);knob.style.left=(28+Math.cos(a)*m)+"px";knob.style.top=(28+Math.sin(a)*m)+"px";keys.w=Math.sin(a)*m/38<-.2;keys.s=Math.sin(a)*m/38>.2;keys.a=Math.cos(a)*m/38<-.2;keys.d=Math.cos(a)*m/38>.2});
+ joy.addEventListener("pointerup",()=>{joyData=null;stick.style.display="none";keys.w=keys.s=keys.a=keys.d=false});
+}
+let tool="gun";
+function selectBuild(p){selectedPiece=p;buildMode=true;$("buildbar").style.display="flex";showMsg(p.toUpperCase()+" sélectionné",.7)}
+function forwardVector(){return new THREE.Vector3(Math.sin(camYaw),0,Math.cos(camYaw)).negate()}
+function fire(){
+ if(!playing||tool!=="gun"||ammo<=0)return;ammo--;let dir=forwardVector();dir.y=camPitch*.7;dir.normalize();let start=player.position.clone();start.y+=2;start.add(dir.clone().multiplyScalar(1.3));
+ let b={p:start,v:dir.multiplyScalar(35),life:2,owner:"p"};bullets.push(b);let m=new THREE.Mesh(new THREE.SphereGeometry(.08,6,6),mat(0xffe26b));m.position.copy(start);b.mesh=m;scene.add(m);
+ raycaster.set(start,dir);let hits=raycaster.intersectObjects(bots,true);if(hits.length){let root=hits[0].object;while(root.parent&&!bots.includes(root))root=root.parent;let bot=root;if(bots.includes(bot)){bot.userData.hp-=35;if(bot.userData.hp<=0){scene.remove(bot);bots=bots.filter(x=>x!==bot);showMsg("Bot éliminé !",.7)}}}
+ updateHUD();
+}
+function buildPiece(){
+ if(!buildMode||wood<10)return showMsg("Pas assez de bois",.7);
+ let dir=forwardVector();let pos=player.position.clone().add(dir.multiplyScalar(5));pos.y=selectedPiece==="wall"?2:selectedPiece==="floor"?1:1.5;pos.x=Math.round(pos.x/2)*2;pos.z=Math.round(pos.z/2)*2;
+ let m;
+ if(selectedPiece==="wall")m=box(4,4,.35,0x8b5a2b);
+ else if(selectedPiece==="floor")m=box(4,.3,4,0x9b6b38);
+ else {m=box(4,.3,4,0x9b6b38);m.rotation.x=-.45}
+ m.position.copy(pos);m.userData={type:selectedPiece,hp:100,edited:false};m.castShadow=true;scene.add(m);builds.push(m);wood-=10;updateHUD();
+}
+function editNearest(){
+ let best=null,bd=9;for(const b of builds){let d=b.position.distanceTo(player.position);if(d<bd){bd=d;best=b}}
+ if(!best)return;
+ if(best.userData.type==="ramp")return showMsg("Les rampes ne se modifient pas",1);
+ if(!best.userData.edited){best.userData.edited=true;if(best.userData.type==="wall"){let cut=box(1.3,2.3,.5,0x111);cut.position.copy(best.position);cut.position.z+=.1;scene.add(cut);best.userData.cut=cut} else {best.scale.set(.5,1,.5)}showMsg("Pièce éditée",.8)}
+ else {if(best.userData.cut)scene.remove(best.userData.cut);best.scale.set(1,1,1);best.userData.edited=false;showMsg("Pièce réparée",.8)}
+}
+function useNearest(){
+ let nearest=null,bd=3;for(const c of chests){let d=c.mesh.position.distanceTo(player.position);if(!c.used&&d<bd){nearest=c;bd=d}}
+ if(nearest){nearest.used=true;playerHP=Math.min(100,playerHP+25);playerShield=Math.min(100,playerShield+25);ammo+=15;showMsg("Coffre : +PV +bouclier +munitions",1.2);updateHUD();return}
+ let tree=null;bd=3;for(const t of trees){let d=t.position.distanceTo(player.position);if(d<bd){tree=t;bd=d}}
+ if(tree&&tool==="pick"){wood+=20;scene.remove(tree);trees=trees.filter(x=>x!==tree);showMsg("+20 bois",.7);updateHUD()}
+}
+function botAI(dt){
+ for(const b of bots){let to=player.position.clone().sub(b.position);let d=to.length();b.lookAt(player.position.x,b.position.y+1.5,player.position.z);if(d>9)b.position.add(to.normalize().multiplyScalar(b.userData.speed*dt));b.userData.cool-=dt;if(d<32&&b.userData.cool<=0){b.userData.cool=1.2+Math.random();damagePlayer(8)}}
+}
+function damagePlayer(n){let s=Math.min(playerShield,n);playerShield-=s;n-=s;playerHP-=n;updateHUD();if(playerHP<=0)endGame(false)}
+function storm(dt){
+ gameTime+=dt;let max=mode==="duel"?48:95;stormRadius=Math.max(10,max-gameTime*.65);
+ let d=Math.hypot(player.position.x,player.position.z);if(d>stormRadius){stormDamageTimer+=dt;if(stormDamageTimer>.5){stormDamageTimer=0;damagePlayer(5)}}else stormDamageTimer=0;
+ for(const b of bots){if(Math.hypot(b.position.x,b.position.z)>stormRadius){b.userData.hp-=dt*7;if(b.userData.hp<=0){scene.remove(b);bots=bots.filter(x=>x!==b)}}}
+ $("stormText").textContent=Math.round(stormRadius/max*100)+"%";
+}
+function movement(dt){
+ let dir=new THREE.Vector3();if(keys.w)dir.z-=1;if(keys.s)dir.z+=1;if(keys.a)dir.x-=1;if(keys.d)dir.x+=1;if(dir.length())dir.normalize();
+ let speed=keys.shift?9:6;let fw=new THREE.Vector3(Math.sin(camYaw),0,Math.cos(camYaw)).negate(),rt=new THREE.Vector3(fw.z,0,-fw.x);player.position.add(fw.multiplyScalar(-dir.z*speed*dt));player.position.add(rt.multiplyScalar(dir.x*speed*dt));
+ velocity.y-=18*dt;player.position.y+=velocity.y*dt;if(player.position.y<0){player.position.y=0;velocity.y=0}
+ player.position.x=Math.max(-94,Math.min(94,player.position.x));player.position.z=Math.max(-94,Math.min(94,player.position.z));player.rotation.y=camYaw;
+}
+function cameraFollow(){let target=player.position.clone();target.y+=2;let off=new THREE.Vector3(Math.sin(camYaw)*-7,2.8+Math.sin(camPitch)*3,Math.cos(camYaw)*-7);camera.position.lerp(target.clone().add(off),.12);camera.lookAt(target)}
+function updateHUD(){$("hpText").textContent=Math.max(0,Math.ceil(playerHP));$("shieldText").textContent=Math.max(0,Math.ceil(playerShield));$("hp").style.width=Math.max(0,playerHP)+"%";$("shield").style.width=Math.max(0,playerShield)+"%";$("wood").textContent=wood;$("ammo").textContent=ammo;$("alive").textContent=bots.length+1}
+function showMsg(t,sec=1){$("message").textContent=t;$("message").style.opacity=1;clearTimeout(showMsg.t);showMsg.t=setTimeout(()=>$("message").style.opacity=0,sec*1000)}
+function endGame(win){playing=false;showMsg(win?"🏆 VICTOIRE !":"💀 ÉLIMINÉ",4);setTimeout(()=>location.reload(),3000)}
+function loop(){requestAnimationFrame(loop);if(!playing)return;let dt=Math.min(clock.getDelta(),.05);movement(dt);botAI(dt);storm(dt);cameraFollow();
+ for(const b of bullets){b.mesh.position.add(b.v.clone().multiplyScalar(dt));b.life-=dt;if(b.life<=0)scene.remove(b.mesh)}bullets=bullets.filter(b=>b.life>0);
+ if(bots.length===0)endGame(true);updateHUD();renderer.render(scene,camera)}
+</script>
+</body>
+  </html>
